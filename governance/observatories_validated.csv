@@ -1,0 +1,20 @@
+observatory_id,country_code,country,observatory_name,start_date,end_date,water_column,soft_substrates,hard_substrates,water_site_latitude,water_site_longitude,sediment_site_latitude,sediment_site_longtitude,hard_substrates_site1_longitude,hard_substrates_site1_latitude,hard_substrates_site2_longtitude,hard_substrates_site2_latitude,contact_person,contact_person_email,ena_accession_number_umbrella,ena_accession_number_project,core
+BPNS,BE,Belgium,EMOBON-BE,2021-06-01,,True,True,True,51.433331,2.808331,51.433331,2.80833,51.579997,2.9933,,,Klaas Deneudt,klaas.deneudt@vliz.be,PRJEB51688,PRJEB51652,True
+EMT21,ES,Spain,EMT CIM-UVIGO,2021-06-01,,True,True,True,42.201944,-8.7985,42.201944,-8.7985,42.233333,-8.783333,,,"Jose Gonzalez, Jesus Troncoso","josegonzález@uvigo.es, troncoso@uvigo.es",PRJEB51688,PRJEB51653,True
+PiEGetxo,ES,Spain,PiE-UPV/EHU,2021-06-01,,True,False,True,43.338583,-3.014639,,,43.338452,-3.014833,,,Oihane Diaz De Cerio Arruabarrena,oihane.diazdecerio@ehu.eus,PRJEB51688,PRJEB51660,True
+VB,FR,France,Bay of Villefranche sur Mer- southern France,2021-06-01,,True,False,True,43.683,7.317,,,43.674619,7.332372,,,Cecile Fauvelot,cecile.fauvelot@ird.fr,PRJEB51688,PRJEB51664,True
+OOB,FR,France,Banyuls Observatory,2021-06-01,,False,True,False,,,42.484167,3.135278,,,,,Pierre Galand,pierre.galand@obs-banyuls.fr,PRJEB51688,PRJEB51665,True
+ROSKOGO,FR,France,Roscoff Genomic Observatory,2021-06-01,,True,True,True,48.771667,-3.968333,48.771667,-3.968333,48.728719,-3.958939,48.717511,-3.966489,Fabienne Rigaut-Jalabert,fabienne.jalabert@sb-roscoff.fr,PRJEB51688,PRJEB51662,True
+HCMR-1,GR,Greece,HCMR-1-UBPC,2021-06-01,,True,True,True,35.346621,25.278761,35.346621,25.27876,35.343153,25.136605,35.34662,25.27876,Melanthia Stavroulaki,mstavroulaki@hcmr.gr,PRJEB51688,PRJEB51655,True
+IUIEilat1,IL,Israel,IUI,2021-06-01,,True,False,True,29.5,34.916667,,,29.5,34.9,29.52,34.93,Miguel Frada,miguel.frada@mail.huji.ac.il,PRJEB51688,PRJEB51656,True
+NRMCB,IT,Italy,NEREAB,2021-06-01,,True,True,False,40.800139,14.25,40.800139,14.25,,,,,Raffaella Casotti,raffaella.casotti@szn.it,PRJEB51688,PRJEB51658,True
+AAOT,IT,Italy,Acqua Alta Oceanographic Tower ,2021-06-01,,True,False,True,45.314167,12.508333,,,45.316667,12.5,,,Mauro Bastianini,mauro.bastianini@ismar.cnr.it,PRJEB51688,PRJEB50566,True
+Bergen,NO,Norway,Marineholmen,2021-06-01,,True,False,False,60.269671,5.21957,,,,,,,Henrik Glenner,Henrik.Glenner@UiB.no,PRJEB51688,PRJEB50569,True
+ESC68N,NO,Norway,Engenes Science Centre ,2021-06-01,,True,False,False,68.925895,17.125619,,,,,,,Kim Praebel,Kim.praebel@uit.no,PRJEB51688,PRJEB51654,True
+RFormosa,PT,Portugal,Ria Formosa,2021-06-01,,True,True,False,37.005639,-7.96925,37.005639,-7.96925,,,,,Bruno Louro,blouro@ualg.pt,PRJEB51688,PRJEB51661,True
+OSD74,PT,Portugal,Porto,2021-06-01,,True,False,False,41.146528,-8.666639,,,,,,,Catarina Magalhes,cmagalhaes@ciimar.up.pt,PRJEB51688,PRJEB51659,True
+MBAL4,GB,United Kingdom,Plymouth Station L4 ,2021-06-01,2022-12-31,True,False,False,50.25,-4.217,,,,,,,Michael Cunliffe,micnli@mba.ac.uk,PRJEB51688,PRJEB51657,True
+STHVN,GB,United Kingdom,Stonehaven,2021-06-01,2022-12-31,True,True,False,56.9635,-2.113,56.9635,-2.113,,,,,Iveta Matejusova,Iveta.Matejusova@gov.scot,PRJEB51688,PRJEB51663,True
+UMF,SE,Sweden,Ore Estuary,2022-08-01,,True,True,False,63.530556,19.813611,63.009128,19.01398,,,,,Annie Marie Cox,annie.cox@umu.se,PRJEB51688,PRJEB57914,True
+LMO,SE,Sweden,Linnaeus Microbial Observatory,2022-12-01,,True,False,False,56.916904,17.050178,,,,,,,Jarone Pinhassi,Jarone.pinhassi@lnu.se,PRJEB51688,PRJEB64705,True
+Plenzia,ES,Spain,PiE-UPV/EHU,2023-06-01,,True,False,False,43.416151,-2.955807,,,,,,,Oihane Diaz De Cerio Arruabarrena,oihane.diazdecerio@ehu.eus,PRJEB51688,,False

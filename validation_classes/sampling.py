@@ -16,7 +16,7 @@ class Model(BaseModel):
     sampl_person_orcid: str | None
     tidal_stage: str | None
     depth: float | str | None
-    replicate: float | None
+    replicate: str | float | None # Rep int or "blank" hence str
     samp_size_vol: int | float | None = None
     time_fi: str | float | None = None
     size_frac: str | None = None
@@ -96,14 +96,12 @@ class Model(BaseModel):
             vl = value.lower()
             #print(f"This is vl: {vl}")
             if vl not in ["y", "n", "t", "f", "\u03c4"]: # "\u03c4" is a Greek Tau in ROSKOGO
-                raise ValueError(f"What the hell is this: {value}")
+                raise ValueError(f"Unrecognised value: {value}")
             else:
                 if vl in ["y", "t"]:
                     return True
                 else:
                     return False
-
-    # Specifically dealing with crap
 
     @field_validator("store_temp_hq")
     @classmethod
@@ -120,7 +118,150 @@ class Model(BaseModel):
                     datetime.datetime.strptime(value, "%Y-%m-%d")
                     return None
                 except ValueError:
-                    raise ValueError(f"What the hell is this: {value}")
+                    raise ValueError(f"Unrecognised value: {value}")
+
+    # This is a horrible hack but Googlesheets interprest the work "blank" as NULL when retrieving the sheet
+    # The values in sheets are ints
+    # Here we assume all NULLs/Nones are supposed to be "blank"
+    @field_validator("replicate")
+    @classmethod
+    def coerce_replicate_to_string(cls, value: int | float | None) -> str:
+        if not value:
+            return "blank"
+        if isinstance(value, int):
+            return str(value)
+        elif isinstance(value, float):
+            return str(int(value))
+        else:
+            raise ValueError(f"Unrecognised value: {value}")
+    
+    @field_validator("collection_date", "samp_store_date", "ship_date", "arr_date_hq")
+    @classmethod
+    def coerce_the_date_strings(cls, value: str | None) -> datetime.date:
+        if not value:
+            return
+        if isinstance(value, str):
+            try:
+                #ISO 8601 as it should be
+                return datetime.datetime.strptime(value, "%Y-%m-%d")
+            except ValueError:
+                try:
+                    #Day, month, year - 23/10/2023
+                    return datetime.datetime.strptime(value, "%d/%m/%Y")
+                except ValueError:
+                    #NRMCB has "expected 06-2024"
+                    if "expected" in value.lower():
+                        return None
+                    else:
+                        raise ValueError(f"Unrecognised value: {value}")
+        else:
+            raise ValueError(f"Unrecognised value: {value}")
+
+    @field_serializer("collection_date", "samp_store_date", "ship_date", "arr_date_hq")
+    def serialize_dates(self, value: datetime.date | None) -> str | None:
+        if isinstance(value, datetime.date):
+            return value.strftime("%Y-%m-%d")
+        else:
+            return None
+
+class StrictModel(BaseModel):
+    source_mat_id_orig: str
+    samp_description: str
+    tax_id: int 
+    scientific_name: str
+    investigation_type: str
+    env_material: str
+    collection_date: datetime.date | str
+    sampling_event: str
+    sampl_person: str 
+    sampl_person_orcid: str | None
+    tidal_stage: str | None
+    depth: int 
+    replicate: str # Rep int or "blank", hence str raw sheets are broken
+    samp_size_vol: int
+    time_fi: int
+    size_frac: str
+    size_frac_low: int
+    size_frac_up: int 
+    membr_cut: bool | str
+    samp_collect_device: str
+    samp_mat_process: str
+    samp_mat_process_dev: str
+    samp_store_date: datetime.date | str
+    samp_store_loc: str
+    samp_store_temp: int
+    store_person: str
+    store_person_orcid: str | None
+    other_person: str | None
+    other_person_orcid: str | None
+    long_store: bool | str
+    ship_date: datetime.date | str
+    arr_date_hq: datetime.date | str
+    store_temp_hq: int
+    ship_date_seq: datetime.date | str
+    arr_date_seq: datetime.date | str 
+    failure: bool | str
+    failure_comment: str
+    ENA_accession_number_sample: str
+    source_mat_id: str
+
+    #Let's get rid of empty strings first:
+    @model_validator(mode="before")
+    @classmethod
+    def contains_a_blank_string(cls, model: Any) -> Any:
+        for key in model:
+            #print(f"Key {key} has value {model[key]} is type {type(model[key])}")
+            #print(f"Value in blank_strings {value}")
+            if isinstance(model[key], str):
+                if model[key].strip() == "":
+                    model[key] = None
+        return model
+
+    #God I hate NaNs
+    @model_validator(mode="before")
+    @classmethod
+    def replace_NaNs(cls, model: Any) -> Any:
+        for key in model:
+            if isinstance(model[key], float):
+                if math.isnan(model[key]):
+                    model[key] = None
+            #print(f"Value in NaNs {model[key]}")
+        #print(f"Final value { | Nonemodel}")
+        return model
+
+    #Get rid of "NA" "N/A"'s
+    @model_validator(mode="before")
+    @classmethod
+    def replace_not_availables(cls, model: Any) -> Any:
+        for key in model:
+            if isinstance(model[key], str):
+                elem = model[key].strip().lower
+                if elem in ["na", "n a", "n/a", "n / a"]:
+                    model[key] = None
+            #print(f"Value in NaNs {model[key]}")
+        #print(f"Final value {model}")
+        return model
+
+    @field_validator("membr_cut", "long_store", "failure")
+    @classmethod
+    def coerce_to_bool(cls, value: str | bool | None) -> bool | None:
+        
+        if value == "N\t2022-10-17\t2022-10-19\t-70\t2023-06-01\t2023-06-01\t\t\t": #In VB long_store
+            return None 
+        if not value:
+            return None
+        if isinstance(value, bool):
+            return value
+        else:
+            vl = value.lower()
+            #print(f"This is vl: {vl}")
+            if vl not in ["y", "n", "t", "f", "\u03c4"]: # "\u03c4" is a Greek Tau in ROSKOGO
+                raise ValueError(f"Unrecognised value: {value}")
+            else:
+                if vl in ["y", "t"]:
+                    return True
+                else:
+                    return False
 
     @field_validator("collection_date", "samp_store_date", "ship_date", "arr_date_hq")
     @classmethod
@@ -140,13 +281,6 @@ class Model(BaseModel):
                     if "expected" in value.lower():
                         return None
                     else:
-                        raise ValueError(f"What the hell is this: {value}")
+                        raise ValueError(f"Unrecognised value: {value}")
         else:
-            raise ValueError(f"What the hell is this: {value}")
-
-    @field_serializer("collection_date", "samp_store_date", "ship_date", "arr_date_hq")
-    def serialize_dates(self, value: datetime.date | None) -> str | None:
-        if isinstance(value, datetime.date):
-            return value.strftime("%Y-%m-%d")
-        else:
-            return None
+            raise ValueError(f"Unrecognised value: {value}")

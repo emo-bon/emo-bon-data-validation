@@ -2,4 +2,8 @@ from .observatories import Model as observatoriesModel
 from .logsheets import Model as logsheetsModel
 from .sampling import Model as samplingModel
 from .sampling import StrictModel as samplingModelStrict
+from .sampling import SemiStrictModel as samplingModelSemiStrict
 from .measured import Model as measuredModel
+from .sampling_github import ModelGithub as samplingModelGithub
+from .sampling_github import StrictModelGithub as samplingModelGithubStrict
+from .sampling_github import SemiStrictModelGithub as samplingModelGithubSemiStrict

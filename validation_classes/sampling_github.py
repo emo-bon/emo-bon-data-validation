@@ -1,12 +1,12 @@
 import math
 import datetime
-from pydantic import BaseModel, field_validator, model_validator, ValidationError, Field, AliasChoices, field_serializer
+from pydantic import BaseModel, field_validator, model_validator, ValidationError, Field, AliasChoices, field_serializer, HttpUrl
 from typing import Any
 
-class Model(BaseModel):
+class ModelGithub(BaseModel):
     source_mat_id_orig: str | None
     samp_description: str | None
-    tax_id: int | None
+    tax_id: HttpUrl | None
     scientific_name: str | None
     investigation_type: str | None
     env_material: str | None
@@ -16,7 +16,7 @@ class Model(BaseModel):
     sampl_person_orcid: str | None
     tidal_stage: str | None
     depth: float | str | None
-    replicate: str | float | None # Rep int or "blank" hence str
+    replicate: str | int | float
     samp_size_vol: int | float | None = None
     time_fi: str | float | None = None
     size_frac: str | None = None
@@ -28,7 +28,7 @@ class Model(BaseModel):
     samp_mat_process_dev: str | None
     samp_store_date: datetime.date | str | None
     samp_store_loc: str | None
-    samp_store_temp: int | None
+    samp_store_temp: int | str | None
     store_person: str | None
     store_person_orcid: str | None = None
     other_person: str | None
@@ -85,11 +85,15 @@ class Model(BaseModel):
     @field_validator("membr_cut", "failure", "long_store")
     @classmethod
     def coerce_to_bool(cls, value: str | bool | None) -> bool | None:
-        
-        if value == "N\t2022-10-17\t2022-10-19\t-70\t2023-06-01\t2023-06-01\t\t\t": #In VB long_store
+        if value == "N\t2022-10-17\t2022-10-19\t-70\t2023-06-01\t2023-06-01":
+            #In VB long_store
             return None 
         if not value:
             return None
+        if value == "false":
+            return False
+        if value == "true":
+            return True
         if isinstance(value, bool):
             return value
         else:
@@ -103,9 +107,27 @@ class Model(BaseModel):
                 else:
                     return False
 
+    # The QC is actually introducing new errors not present in the original sheets
+    @field_validator("samp_store_temp")
+    @classmethod
+    def coerce_samp_store_temp(cls, value: int | str) -> int:
+        if isinstance(value, int):
+            return value
+        elif isinstance(value, str):
+            try:
+                int(value)
+                return value
+            except ValueError:
+                #ROSKOGO has '-80°C' in this field
+                if value[-1] == "C":
+                    try:
+                        return int(value[:-2])
+                    except ValueError:
+                        raise ValueError(f"Unrecognised value: {value}")    
+
     @field_validator("store_temp_hq")
     @classmethod
-    def coerce_store_temp_hq(cls, value: int | str) -> int:
+    def coerce_store_temp_hq(cls, value: int | str) -> str:
         if isinstance(value, int):
             return value
         elif isinstance(value, str):
@@ -120,18 +142,15 @@ class Model(BaseModel):
                 except ValueError:
                     raise ValueError(f"Unrecognised value: {value}")
 
-    # This is a horrible hack but Googlesheets interprest the work "blank" as NULL when retrieving the sheet
-    # The values in sheets are ints
-    # Here we assume all NULLs/Nones are supposed to be "blank"
     @field_validator("replicate")
     @classmethod
-    def coerce_replicate_to_string(cls, value: int | float | None) -> str:
-        if not value:
-            return "blank"
+    def coerce_replicate_to_string(cls, value: int | float | str) -> str:
         if isinstance(value, int):
             return str(value)
         elif isinstance(value, float):
             return str(int(value))
+        elif isinstance(value, str):
+            return value
         else:
             raise ValueError(f"Unrecognised value: {value}")
     
@@ -164,7 +183,7 @@ class Model(BaseModel):
         else:
             return None
 
-class StrictModel(BaseModel):
+class StrictModelGithub(BaseModel):
     source_mat_id_orig: str
     samp_description: str
     tax_id: int 
@@ -285,7 +304,7 @@ class StrictModel(BaseModel):
         else:
             raise ValueError(f"Unrecognised value: {value}")
 
-class SemiStrictModel(BaseModel):
+class SemiStrictModelGithub(BaseModel):
     source_mat_id_orig: str | None
     samp_description: str | None
     tax_id: int | None

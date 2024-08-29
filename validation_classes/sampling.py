@@ -120,7 +120,8 @@ class Model(BaseModel):
                 except ValueError:
                     raise ValueError(f"Unrecognised value: {value}")
 
-    # This is a horrible hack but Googlesheets interprest the work "blank" as NULL when retrieving the sheet
+    # This is a horrible hack but Googlesheets interprets the work "blank" as NULL
+    # when retrieving the sheet using this old "visualisation" method?!
     # The values in sheets are ints
     # Here we assume all NULLs/Nones are supposed to be "blank"
     @field_validator("replicate")
@@ -285,6 +286,22 @@ class StrictModel(BaseModel):
         else:
             raise ValueError(f"Unrecognised value: {value}")
 
+    # This is a horrible hack but Googlesheets interprets the work "blank" as NULL
+    # when retrieving the sheet using this old "visualisation" method?!
+    # The values in sheets are ints
+    # Here we assume all NULLs/Nones are supposed to be "blank"
+    @field_validator("replicate")
+    @classmethod
+    def coerce_replicate_to_string(cls, value: int | float | None) -> str:
+        if not value:
+            return "blank"
+        if isinstance(value, int):
+            return str(value)
+        elif isinstance(value, float):
+            return str(int(value))
+        else:
+            raise ValueError(f"Unrecognised value: {value}")
+
 class SemiStrictModel(BaseModel):
     source_mat_id_orig: str | None
     samp_description: str | None
@@ -412,3 +429,19 @@ class SemiStrictModel(BaseModel):
             return value.strftime("%Y-%m-%d")
         else:
             return None
+
+    # This is a horrible hack but Googlesheets interprets the work "blank" as NULL
+    # when retrieving the sheet using this old "visualisation" method?!
+    # The values in sheets are ints
+    # Here we assume all NULLs/Nones are supposed to be "blank"
+    @field_validator("replicate")
+    @classmethod
+    def coerce_replicate_to_string(cls, value: int | float | None) -> str:
+        if not value:
+            return "blank"
+        if isinstance(value, int):
+            return str(value)
+        elif isinstance(value, float):
+            return str(int(value))
+        else:
+            raise ValueError(f"Unrecognised value: {value}")

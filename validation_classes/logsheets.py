@@ -44,6 +44,6 @@ class Model(BaseModel):
             if isinstance(model[key], float):
                 if math.isnan(model[key]):
                     model[key] = None
-            print(f"Value in NaNs {model[key]}")
+            #print(f"Value in NaNs {model[key]}")
         #print(f"Final value {model}")
         return model

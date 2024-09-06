@@ -7,3 +7,4 @@ from .measured import Model as measuredModel
 from .sampling_github import ModelGithub as samplingModelGithub
 from .sampling_github import StrictModelGithub as samplingModelGithubStrict
 from .sampling_github import SemiStrictModelGithub as samplingModelGithubSemiStrict
+from .observatory import Model as observatoryModel

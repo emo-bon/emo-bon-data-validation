@@ -16,7 +16,7 @@ from typing import Any, Optional, Union
 class Model(BaseModel):
     source_mat_id_orig:            Optional[str]
     samp_description:              Optional[str]
-    tax_id:                        Union[int, float, None]               # Serialised to int
+    tax_id:                        Union[int, float, None]               # Serialised to int, floats are due to NaNs being present
     scientific_name:               Optional[str] 
     investigation_type:            Optional[str] 
     env_material:                  Optional[str]

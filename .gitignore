@@ -6,6 +6,7 @@ transformed/.ipynb_checkpoints/*
 validation_errors_github/*
 .ipynb_checkpoints/*
 .mypy_cache
-.env
+.venv
+poetry.lock
 emo-bon-data-validation.code-workspace
 *.swp

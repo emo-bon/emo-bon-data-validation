@@ -194,7 +194,7 @@ class Model(BaseModel):
         if isinstance(value, str):
             return value
         elif isinstance(value, float):
-            return str(float)
+            return str(value)
         else:
             return None
 

@@ -4,7 +4,6 @@ from typing import Optional, Any
 from pydantic import (
     BaseModel,
     ValidationError,
-    ValidationInfo,
     field_validator,
     Field,
     AliasChoices,
@@ -18,7 +17,8 @@ class Model(BaseModel):
     country: str
     observatory_name: str = Field(
         ...,
-        validation_alias=AliasChoices("EMOBON_observatory_name", "observatory_name"),
+        validation_alias=AliasChoices(
+            "EMOBON_observatory_name", "observatory_name"),
     )
     observatory_id: str = Field(
         ..., validation_alias=AliasChoices("EMOBON_observatory_id", "observatory_id")
@@ -26,7 +26,8 @@ class Model(BaseModel):
     start_date: str = Field(
         ..., validation_alias=AliasChoices("startdate", "start_date")
     )
-    end_date: str | None = Field(validation_alias=AliasChoices("enddate", "end_date"))
+    end_date: str | None = Field(
+        validation_alias=AliasChoices("enddate", "end_date"))
     water_column: str | bool = Field(
         ..., validation_alias=AliasChoices("Water_Column", "water_column")
     )
@@ -49,7 +50,8 @@ class Model(BaseModel):
     )
     contact_person_email: str = Field(
         ...,
-        validation_alias=AliasChoices("contact person email", "contact_person_email"),
+        validation_alias=AliasChoices(
+            "contact person email", "contact_person_email"),
     )
     ena_accession_number_umbrella: Optional[str] = Field(
         ...,
@@ -63,7 +65,8 @@ class Model(BaseModel):
             "ENA_accession_number_project", "ena_accession_number_project"
         ),
     )
-    core: str | bool = Field(..., validation_alias=AliasChoices("EMOBON_core", "core"))
+    core: str | bool = Field(..., validation_alias=AliasChoices(
+        "EMOBON_core", "core"))
 
     # Let's get rid of empty strings first:
     @model_validator(mode="before")

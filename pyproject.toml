@@ -4,13 +4,14 @@ version = "0.1.0"
 description = ""
 authors = ["Cymon J. Cox <cymon.cox@googlemail.com>"]
 readme = "README.md"
-package_mode = false
+#package_mode = false
 
 [tool.poetry.dependencies]
 python = "^3.10"
 pandas = "^2.2.2"
 pydantic = "^2.9.1"
 validators = "^0.34.0"
+black = {extras = ["jupyter"], version = "^24.8.0"}
 
 [tool.poetry.group.dev.dependencies]
 ipykernel = "^6.29.5"

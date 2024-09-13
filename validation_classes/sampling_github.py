@@ -1,7 +1,17 @@
 import math
 import datetime
-from pydantic import BaseModel, field_validator, model_validator, ValidationError, Field, AliasChoices, field_serializer, HttpUrl
+from pydantic import (
+    BaseModel,
+    field_validator,
+    model_validator,
+    ValidationError,
+    Field,
+    AliasChoices,
+    field_serializer,
+    HttpUrl,
+)
 from typing import Any
+
 
 class ModelGithub(BaseModel):
     source_mat_id_orig: str | None
@@ -38,25 +48,27 @@ class ModelGithub(BaseModel):
     arr_date_hq: datetime.date | str | None = None
     store_temp_hq: int | str | None
     ship_date_seq: datetime.date | None
-    arr_date_seq: datetime.date | None 
+    arr_date_seq: datetime.date | None
     failure: bool | str | None
     failure_comment: str | None
     ENA_accession_number_sample: str | None = None
-    source_mat_id: str = Field(..., validation_alias=AliasChoices("source_mat_id", "source_material_id"))
+    source_mat_id: str = Field(
+        ..., validation_alias=AliasChoices("source_mat_id", "source_material_id")
+    )
 
-    #Let's get rid of empty strings first:
+    # Let's get rid of empty strings first:
     @model_validator(mode="before")
     @classmethod
     def contains_a_blank_string(cls, model: Any) -> Any:
         for key in model:
-            #print(f"Key {key} has value {model[key]} is type {type(model[key])}")
-            #print(f"Value in blank_strings {value}")
+            # print(f"Key {key} has value {model[key]} is type {type(model[key])}")
+            # print(f"Value in blank_strings {value}")
             if isinstance(model[key], str):
                 if model[key].strip() == "":
                     model[key] = None
         return model
 
-    #God I hate NaNs
+    # God I hate NaNs
     @model_validator(mode="before")
     @classmethod
     def replace_NaNs(cls, model: Any) -> Any:
@@ -64,11 +76,11 @@ class ModelGithub(BaseModel):
             if isinstance(model[key], float):
                 if math.isnan(model[key]):
                     model[key] = None
-            #print(f"Value in NaNs {model[key]}")
-        #print(f"Final value { | Nonemodel}")
+            # print(f"Value in NaNs {model[key]}")
+        # print(f"Final value { | Nonemodel}")
         return model
 
-    #Get rid of "NA" "N/A"'s
+    # Get rid of "NA" "N/A"'s
     @model_validator(mode="before")
     @classmethod
     def replace_not_availables(cls, model: Any) -> Any:
@@ -77,17 +89,16 @@ class ModelGithub(BaseModel):
                 elem = model[key].strip().lower
                 if elem in ["na", "n a", "n/a", "n / a"]:
                     model[key] = None
-            #print(f"Value in NaNs {model[key]}")
-        #print(f"Final value {model}")
+            # print(f"Value in NaNs {model[key]}")
+        # print(f"Final value {model}")
         return model
-    
 
     @field_validator("membr_cut", "failure", "long_store")
     @classmethod
     def coerce_to_bool(cls, value: str | bool | None) -> bool | None:
         if value == "N\t2022-10-17\t2022-10-19\t-70\t2023-06-01\t2023-06-01":
-            #In VB long_store
-            return None 
+            # In VB long_store
+            return None
         if not value:
             return None
         if value == "false":
@@ -98,8 +109,14 @@ class ModelGithub(BaseModel):
             return value
         else:
             vl = value.lower()
-            #print(f"This is vl: {vl}")
-            if vl not in ["y", "n", "t", "f", "\u03c4"]: # "\u03c4" is a Greek Tau in ROSKOGO
+            # print(f"This is vl: {vl}")
+            if vl not in [
+                "y",
+                "n",
+                "t",
+                "f",
+                "\u03c4",
+            ]:  # "\u03c4" is a Greek Tau in ROSKOGO
                 raise ValueError(f"Unrecognised value: {value}")
             else:
                 if vl in ["y", "t"]:
@@ -118,12 +135,12 @@ class ModelGithub(BaseModel):
                 int(value)
                 return value
             except ValueError:
-                #ROSKOGO has '-80°C' in this field
+                # ROSKOGO has '-80°C' in this field
                 if value[-1] == "C":
                     try:
                         return int(value[:-2])
                     except ValueError:
-                        raise ValueError(f"Unrecognised value: {value}")    
+                        raise ValueError(f"Unrecognised value: {value}")
 
     @field_validator("store_temp_hq")
     @classmethod
@@ -135,7 +152,7 @@ class ModelGithub(BaseModel):
                 int(value)
                 return value
             except ValueError:
-                #ROSKOGO has dates in this field
+                # ROSKOGO has dates in this field
                 try:
                     datetime.datetime.strptime(value, "%Y-%m-%d")
                     return None
@@ -153,7 +170,7 @@ class ModelGithub(BaseModel):
             return value
         else:
             raise ValueError(f"Unrecognised value: {value}")
-    
+
     @field_validator("collection_date", "samp_store_date", "ship_date", "arr_date_hq")
     @classmethod
     def coerce_the_date_strings(cls, value: str | None) -> datetime.date:
@@ -161,14 +178,14 @@ class ModelGithub(BaseModel):
             return
         if isinstance(value, str):
             try:
-                #ISO 8601 as it should be
+                # ISO 8601 as it should be
                 return datetime.datetime.strptime(value, "%Y-%m-%d")
             except ValueError:
                 try:
-                    #Day, month, year - 23/10/2023
+                    # Day, month, year - 23/10/2023
                     return datetime.datetime.strptime(value, "%d/%m/%Y")
                 except ValueError:
-                    #NRMCB has "expected 06-2024"
+                    # NRMCB has "expected 06-2024"
                     if "expected" in value.lower():
                         return None
                     else:
@@ -183,25 +200,26 @@ class ModelGithub(BaseModel):
         else:
             return None
 
+
 class StrictModelGithub(BaseModel):
     source_mat_id_orig: str
     samp_description: str
-    tax_id: int 
+    tax_id: int
     scientific_name: str
     investigation_type: str
     env_material: str
     collection_date: datetime.date | str
     sampling_event: str
-    sampl_person: str 
+    sampl_person: str
     sampl_person_orcid: str | None
     tidal_stage: str | None
-    depth: int 
-    replicate: str # Rep int or "blank", hence str raw sheets are broken
+    depth: int
+    replicate: str  # Rep int or "blank", hence str raw sheets are broken
     samp_size_vol: int
     time_fi: str | int
     size_frac: str
     size_frac_low: int
-    size_frac_up: int 
+    size_frac_up: int
     membr_cut: bool | str
     samp_collect_device: str
     samp_mat_process: str
@@ -218,25 +236,25 @@ class StrictModelGithub(BaseModel):
     arr_date_hq: datetime.date | str
     store_temp_hq: int
     ship_date_seq: datetime.date | str
-    arr_date_seq: datetime.date | str 
+    arr_date_seq: datetime.date | str
     failure: bool | str
     failure_comment: str
     ENA_accession_number_sample: str
     source_mat_id: str
 
-    #Let's get rid of empty strings first:
+    # Let's get rid of empty strings first:
     @model_validator(mode="before")
     @classmethod
     def contains_a_blank_string(cls, model: Any) -> Any:
         for key in model:
-            #print(f"Key {key} has value {model[key]} is type {type(model[key])}")
-            #print(f"Value in blank_strings {value}")
+            # print(f"Key {key} has value {model[key]} is type {type(model[key])}")
+            # print(f"Value in blank_strings {value}")
             if isinstance(model[key], str):
                 if model[key].strip() == "":
                     model[key] = None
         return model
 
-    #God I hate NaNs
+    # God I hate NaNs
     @model_validator(mode="before")
     @classmethod
     def replace_NaNs(cls, model: Any) -> Any:
@@ -244,11 +262,11 @@ class StrictModelGithub(BaseModel):
             if isinstance(model[key], float):
                 if math.isnan(model[key]):
                     model[key] = None
-            #print(f"Value in NaNs {model[key]}")
-        #print(f"Final value { | Nonemodel}")
+            # print(f"Value in NaNs {model[key]}")
+        # print(f"Final value { | Nonemodel}")
         return model
 
-    #Get rid of "NA" "N/A"'s
+    # Get rid of "NA" "N/A"'s
     @model_validator(mode="before")
     @classmethod
     def replace_not_availables(cls, model: Any) -> Any:
@@ -257,24 +275,32 @@ class StrictModelGithub(BaseModel):
                 elem = model[key].strip().lower
                 if elem in ["na", "n a", "n/a", "n / a"]:
                     model[key] = None
-            #print(f"Value in NaNs {model[key]}")
-        #print(f"Final value {model}")
+            # print(f"Value in NaNs {model[key]}")
+        # print(f"Final value {model}")
         return model
 
     @field_validator("membr_cut", "long_store", "failure")
     @classmethod
     def coerce_to_bool(cls, value: str | bool | None) -> bool | None:
-        
-        if value == "N\t2022-10-17\t2022-10-19\t-70\t2023-06-01\t2023-06-01\t\t\t": #In VB long_store
-            return None 
+
+        if (
+            value == "N\t2022-10-17\t2022-10-19\t-70\t2023-06-01\t2023-06-01\t\t\t"
+        ):  # In VB long_store
+            return None
         if not value:
             return None
         if isinstance(value, bool):
             return value
         else:
             vl = value.lower()
-            #print(f"This is vl: {vl}")
-            if vl not in ["y", "n", "t", "f", "\u03c4"]: # "\u03c4" is a Greek Tau in ROSKOGO
+            # print(f"This is vl: {vl}")
+            if vl not in [
+                "y",
+                "n",
+                "t",
+                "f",
+                "\u03c4",
+            ]:  # "\u03c4" is a Greek Tau in ROSKOGO
                 raise ValueError(f"Unrecognised value: {value}")
             else:
                 if vl in ["y", "t"]:
@@ -289,20 +315,21 @@ class StrictModelGithub(BaseModel):
             return
         if isinstance(value, str):
             try:
-                #ISO 8601 as it should be
+                # ISO 8601 as it should be
                 return datetime.datetime.strptime(value, "%Y-%m-%d")
             except ValueError:
                 try:
-                    #Day, month, year - 23/10/2023
+                    # Day, month, year - 23/10/2023
                     return datetime.datetime.strptime(value, "%d/%m/%Y")
                 except ValueError:
-                    #NRMCB has "expected 06-2024"
+                    # NRMCB has "expected 06-2024"
                     if "expected" in value.lower():
                         return None
                     else:
                         raise ValueError(f"Unrecognised value: {value}")
         else:
             raise ValueError(f"Unrecognised value: {value}")
+
 
 class SemiStrictModelGithub(BaseModel):
     source_mat_id_orig: str | None
@@ -313,13 +340,15 @@ class SemiStrictModelGithub(BaseModel):
     env_material: str | None
     collection_date: datetime.date | str | None
     sampling_event: str | None
-    sampl_person: str  | None
+    sampl_person: str | None
     sampl_person_orcid: str | None
     tidal_stage: str | None
     depth: float | int | None
-    replicate: str | int | float | None# Rep int or "blank", hence str raw sheets are broken
+    replicate: (
+        str | int | float | None
+    )  # Rep int or "blank", hence str raw sheets are broken
     samp_size_vol: float | int | None
-    time_fi: str | int | None # Either str "fi" or integer!
+    time_fi: str | int | None  # Either str "fi" or integer!
     size_frac: str | None
     size_frac_low: float | int | None
     size_frac_up: float | int | None
@@ -339,25 +368,25 @@ class SemiStrictModelGithub(BaseModel):
     arr_date_hq: datetime.date | str | None
     store_temp_hq: float | int | None
     ship_date_seq: datetime.date | str | None
-    arr_date_seq: datetime.date | str  | None
+    arr_date_seq: datetime.date | str | None
     failure: bool | str | None
     failure_comment: str | None
     ENA_accession_number_sample: str | None
     source_mat_id: str | None
 
-    #Let's get rid of empty strings first:
+    # Let's get rid of empty strings first:
     @model_validator(mode="before")
     @classmethod
     def contains_a_blank_string(cls, model: Any) -> Any:
         for key in model:
-            #print(f"Key {key} has value {model[key]} is type {type(model[key])}")
-            #print(f"Value in blank_strings {value}")
+            # print(f"Key {key} has value {model[key]} is type {type(model[key])}")
+            # print(f"Value in blank_strings {value}")
             if isinstance(model[key], str):
                 if model[key].strip() == "":
                     model[key] = None
         return model
 
-    #God I hate NaNs
+    # God I hate NaNs
     @model_validator(mode="before")
     @classmethod
     def replace_NaNs(cls, model: Any) -> Any:
@@ -365,11 +394,11 @@ class SemiStrictModelGithub(BaseModel):
             if isinstance(model[key], float):
                 if math.isnan(model[key]):
                     model[key] = None
-            #print(f"Value in NaNs {model[key]}")
-        #print(f"Final value { | Nonemodel}")
+            # print(f"Value in NaNs {model[key]}")
+        # print(f"Final value { | Nonemodel}")
         return model
 
-    #Get rid of "NA" "N/A"'s
+    # Get rid of "NA" "N/A"'s
     @model_validator(mode="before")
     @classmethod
     def replace_not_availables(cls, model: Any) -> Any:
@@ -378,24 +407,32 @@ class SemiStrictModelGithub(BaseModel):
                 elem = model[key].strip().lower
                 if elem in ["na", "n a", "n/a", "n / a"]:
                     model[key] = None
-            #print(f"Value in NaNs {model[key]}")
-        #print(f"Final value {model}")
+            # print(f"Value in NaNs {model[key]}")
+        # print(f"Final value {model}")
         return model
 
     @field_validator("membr_cut", "long_store", "failure")
     @classmethod
     def coerce_to_bool(cls, value: str | bool | None) -> bool | None:
-        
-        if value == "N\t2022-10-17\t2022-10-19\t-70\t2023-06-01\t2023-06-01\t\t\t": #In VB long_store
-            return None 
+
+        if (
+            value == "N\t2022-10-17\t2022-10-19\t-70\t2023-06-01\t2023-06-01\t\t\t"
+        ):  # In VB long_store
+            return None
         if not value:
             return None
         if isinstance(value, bool):
             return value
         else:
             vl = value.lower()
-            #print(f"This is vl: {vl}")
-            if vl not in ["y", "n", "t", "f", "\u03c4"]: # "\u03c4" is a Greek Tau in ROSKOGO
+            # print(f"This is vl: {vl}")
+            if vl not in [
+                "y",
+                "n",
+                "t",
+                "f",
+                "\u03c4",
+            ]:  # "\u03c4" is a Greek Tau in ROSKOGO
                 raise ValueError(f"Unrecognised value: {value}")
             else:
                 if vl in ["y", "t"]:
@@ -410,14 +447,14 @@ class SemiStrictModelGithub(BaseModel):
             return
         if isinstance(value, str):
             try:
-                #ISO 8601 as it should be
+                # ISO 8601 as it should be
                 return datetime.datetime.strptime(value, "%Y-%m-%d")
             except ValueError:
                 try:
-                    #Day, month, year - 23/10/2023
+                    # Day, month, year - 23/10/2023
                     return datetime.datetime.strptime(value, "%d/%m/%Y")
                 except ValueError:
-                    #NRMCB has "expected 06-2024"
+                    # NRMCB has "expected 06-2024"
                     if "expected" in value.lower():
                         return None
                     else:

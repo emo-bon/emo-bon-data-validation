@@ -10,3 +10,4 @@ validation_errors_github/*
 poetry.lock
 emo-bon-data-validation.code-workspace
 *.swp
+.vscode

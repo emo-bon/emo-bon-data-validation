@@ -3,7 +3,6 @@ from __future__ import annotations
 import math
 from datetime import date
 from typing import Any
-from typing import Optional
 
 from pydantic import AliasChoices
 from pydantic import BaseModel
@@ -82,7 +81,6 @@ class Model(BaseModel):
     @classmethod
     def contains_a_blank_string(cls, model: Any) -> Any:
         for key in model:
-            # print(f"Key {key} has value {model[key]} is type {type(model[key])}")
             # print(f"Value in blank_strings {value}")
             if isinstance(model[key], str):
                 if model[key].strip() == "":

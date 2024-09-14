@@ -1,26 +1,32 @@
+from __future__ import annotations
+
 import math
 from datetime import date
 from typing import Any
-from pydantic import (
-    BaseModel,
-    HttpUrl,
-    ValidationError,
-    ValidationInfo,
-    field_validator,
-    Field,
-    AliasChoices,
-    model_validator,
-    field_serializer,
-)
+
+from pydantic import AliasChoices
+from pydantic import BaseModel
+from pydantic import Field
+from pydantic import field_serializer
+from pydantic import field_validator
+from pydantic import HttpUrl
+from pydantic import model_validator
+from pydantic import ValidationError
+from pydantic import ValidationInfo
 
 
 class Model(BaseModel):
-    country: str = Field(..., validation_alias=AliasChoices("EMBRC Node", "country"))
+    country: str = Field(
+        ..., validation_alias=AliasChoices("EMBRC Node", "country")
+    )
     institute: str = Field(
         ..., validation_alias=AliasChoices("EMBRC Site", "institute")
     )
     observatory_id: str = Field(
-        ..., validation_alias=AliasChoices("EMOBON_observatory_id", "observatory_id")
+        ...,
+        validation_alias=AliasChoices(
+            "EMOBON_observatory_id", "observatory_id"
+        ),
     )
     water_column: HttpUrl | None = Field(
         ..., validation_alias=AliasChoices("Water Column", "water_column")

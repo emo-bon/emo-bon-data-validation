@@ -1,4 +1,3 @@
-.vscode
 validation_classes/.ipynb_checkpoints/*
 validation_classes/__pycache__
 governance/.ipynb_checkpoints/*
@@ -12,3 +11,4 @@ poetry.lock
 emo-bon-data-validation.code-workspace
 *.swp
 .vscode
+.pre-commit-config.yaml

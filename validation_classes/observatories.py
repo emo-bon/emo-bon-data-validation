@@ -1,15 +1,17 @@
+from __future__ import annotations
+
 import math
 from datetime import date
-from typing import Optional, Any
-from pydantic import (
-    BaseModel,
-    ValidationError,
-    field_validator,
-    Field,
-    AliasChoices,
-    model_validator,
-    field_serializer,
-)
+from typing import Any
+from typing import Optional
+
+from pydantic import AliasChoices
+from pydantic import BaseModel
+from pydantic import Field
+from pydantic import field_serializer
+from pydantic import field_validator
+from pydantic import model_validator
+from pydantic import ValidationError
 
 
 class Model(BaseModel):
@@ -18,16 +20,21 @@ class Model(BaseModel):
     observatory_name: str = Field(
         ...,
         validation_alias=AliasChoices(
-            "EMOBON_observatory_name", "observatory_name"),
+            "EMOBON_observatory_name", "observatory_name"
+        ),
     )
     observatory_id: str = Field(
-        ..., validation_alias=AliasChoices("EMOBON_observatory_id", "observatory_id")
+        ...,
+        validation_alias=AliasChoices(
+            "EMOBON_observatory_id", "observatory_id"
+        ),
     )
     start_date: str = Field(
         ..., validation_alias=AliasChoices("startdate", "start_date")
     )
     end_date: str | None = Field(
-        validation_alias=AliasChoices("enddate", "end_date"))
+        validation_alias=AliasChoices("enddate", "end_date")
+    )
     water_column: str | bool = Field(
         ..., validation_alias=AliasChoices("Water_Column", "water_column")
     )
@@ -51,22 +58,24 @@ class Model(BaseModel):
     contact_person_email: str = Field(
         ...,
         validation_alias=AliasChoices(
-            "contact person email", "contact_person_email"),
+            "contact person email", "contact_person_email"
+        ),
     )
-    ena_accession_number_umbrella: Optional[str] = Field(
+    ena_accession_number_umbrella: str | None = Field(
         ...,
         validation_alias=AliasChoices(
             "ENA_accession_number_umbrella", "ena_accession_number_umbrella"
         ),
     )
-    ena_accession_number_project: Optional[str] = Field(
+    ena_accession_number_project: str | None = Field(
         ...,
         validation_alias=AliasChoices(
             "ENA_accession_number_project", "ena_accession_number_project"
         ),
     )
-    core: str | bool = Field(..., validation_alias=AliasChoices(
-        "EMOBON_core", "core"))
+    core: str | bool = Field(
+        ..., validation_alias=AliasChoices("EMOBON_core", "core")
+    )
 
     # Let's get rid of empty strings first:
     @model_validator(mode="before")
@@ -92,7 +101,9 @@ class Model(BaseModel):
         # print(f"Final value {model}")
         return model
 
-    @field_validator("water_column", "soft_substrates", "hard_substrates", "core")
+    @field_validator(
+        "water_column", "soft_substrates", "hard_substrates", "core"
+    )
     @classmethod
     def coerce_to_bool(cls, value: str | bool) -> bool:
         if isinstance(value, bool):

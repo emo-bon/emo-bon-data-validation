@@ -1,92 +1,106 @@
-import math
+from __future__ import annotations
+
 import datetime
-from pydantic import (
-    BaseModel,
-    field_validator,
-    model_validator,
-    ValidationError,
-    Field,
-    AliasChoices,
-    field_serializer,
-)
-from typing import Any, Optional, Union
+import math
+from typing import Any
+from typing import Optional
+from typing import Union
+
+from pydantic import AliasChoices
+from pydantic import BaseModel
+from pydantic import Field
+from pydantic import field_serializer
+from pydantic import field_validator
+from pydantic import model_validator
+from pydantic import ValidationError
 
 
 class Model(BaseModel):
     source_mat_id: str = Field(
-        ..., validation_alias=AliasChoices("source_mat_id", "source_material_id")
+        ...,
+        validation_alias=AliasChoices("source_mat_id", "source_material_id"),
     )
-    chlorophyll: Union[float, str, None]
-    chlorophyll_method: Optional[str]
-    sea_surf_temp: Optional[float]
-    sea_surf_temp_method: Optional[str]
-    sea_subsurf_temp: Union[float, str, None] = None  # Not taken for soft sediments
-    sea_subsurf_temp_method: Optional[str] = None  # Not taken for soft sediments
-    sea_surf_salinity: Union[float, str, None] = None  # Not taken for soft sediments
-    sea_surf_salinity_method: Optional[str] = None  # Not taken for soft sediments
-    sea_subsurf_salinity: Union[float, str, None] = None  # Not taken for soft sediments
-    sea_subsurf_salinity_method: Optional[str] = None  # Not taken for soft sediments
-    alkalinity: Optional[str]
-    alkalinity_method: Optional[str]
-    ammonium: Optional[float]
-    ammonium_method: Optional[str]
-    bac_prod: Optional[str]
-    bac_prod_method: Optional[str]
-    biomass: Optional[str]
-    biomass_method: Optional[str]
-    chem_administration: Optional[str]
-    conduc: Union[float, str, None] = None  # Not taken for soft sediments
-    conduc_method: Optional[str] = None  # Not taken for soft sediments
-    density: Union[float, str, None] = None  # Not taken for soft sediments
-    density_method: Optional[str] = None  # Not taken for soft sediments
-    diss_carb_dioxide: Optional[str]
-    diss_carb_dioxide_method: Optional[str]
-    diss_inorg_carb: Optional[str]
-    diss_inorg_carb_method: Optional[str]
-    diss_org_carb: Optional[str]
-    diss_org_carb_method: Optional[str]
-    diss_org_nitro: Optional[str]
-    diss_org_nitro_method: Optional[str]
-    down_par: Optional[float] = None  # Not taken for soft sediments
-    down_par_method: Optional[str] = None  # Not taken for soft sediments
-    diss_oxygen: Union[float, str, None]
-    diss_oxygen_method: Optional[str]
-    n_alkanes: Optional[str]
-    n_alkanes_method: Optional[str]
-    nitrate: Optional[float]
-    nitrate_method: Optional[str]
-    nitrite: Optional[float]
-    nitrite_method: Optional[str]
-    organism_count: Optional[str]
-    organism_count_method: Optional[str]
-    ph: Union[float, str, None]
-    ph_method: Optional[str]
-    part_org_carb: Optional[str]
-    part_org_carb_method: Optional[str]
-    part_org_nitro: Optional[str]
-    part_org_nitro_method: Optional[str]
-    petroleum_hydrocarb: Optional[str]
-    petroleum_hydrocarb_method: Optional[str]
-    phaeopigments: Optional[float]
-    phaeopigments_method: Optional[str]
-    phosphate: Union[float, str, None]
-    phosphate_method: Optional[str]
-    pigments: Union[float, str, None]
-    pigments_method: Optional[str]
-    pressure: Union[float, str, None]
-    pressure_method: Optional[str]
-    primary_prod: Optional[str] = None  # Not taken for soft sediments
-    primary_prod_method: Optional[str] = None  # Not taken for soft sediments
-    silicate: Optional[float]
-    silicate_method: Optional[str]
-    sulfate: Optional[str]
-    sulfate_method: Optional[str]
-    sulfide: Optional[str]
-    sulfide_method: Optional[str]
-    turbidity: Optional[float] = None  # Not taken for soft sediments
-    turbidity_method: Optional[str] = None  # Not taken for soft sediments
-    water_current: Optional[str]
-    water_current_method: Optional[str]
+    chlorophyll: float | str | None
+    chlorophyll_method: str | None
+    sea_surf_temp: float | None
+    sea_surf_temp_method: str | None
+    sea_subsurf_temp: (
+        float | str | None
+    ) = None  # Not taken for soft sediments
+    sea_subsurf_temp_method: None | (str) = None  # Not taken for soft sediments
+    sea_surf_salinity: (
+        float | str | None
+    ) = None  # Not taken for soft sediments
+    sea_surf_salinity_method: None | (
+        str
+    ) = None  # Not taken for soft sediments
+    sea_subsurf_salinity: (
+        float | str | None
+    ) = None  # Not taken for soft sediments
+    sea_subsurf_salinity_method: None | (
+        str
+    ) = None  # Not taken for soft sediments
+    alkalinity: str | None
+    alkalinity_method: str | None
+    ammonium: float | None
+    ammonium_method: str | None
+    bac_prod: str | None
+    bac_prod_method: str | None
+    biomass: str | None
+    biomass_method: str | None
+    chem_administration: str | None
+    conduc: float | str | None = None  # Not taken for soft sediments
+    conduc_method: str | None = None  # Not taken for soft sediments
+    density: float | str | None = None  # Not taken for soft sediments
+    density_method: str | None = None  # Not taken for soft sediments
+    diss_carb_dioxide: str | None
+    diss_carb_dioxide_method: str | None
+    diss_inorg_carb: str | None
+    diss_inorg_carb_method: str | None
+    diss_org_carb: str | None
+    diss_org_carb_method: str | None
+    diss_org_nitro: str | None
+    diss_org_nitro_method: str | None
+    down_par: float | None = None  # Not taken for soft sediments
+    down_par_method: str | None = None  # Not taken for soft sediments
+    diss_oxygen: float | str | None
+    diss_oxygen_method: str | None
+    n_alkanes: str | None
+    n_alkanes_method: str | None
+    nitrate: float | None
+    nitrate_method: str | None
+    nitrite: float | None
+    nitrite_method: str | None
+    organism_count: str | None
+    organism_count_method: str | None
+    ph: float | str | None
+    ph_method: str | None
+    part_org_carb: str | None
+    part_org_carb_method: str | None
+    part_org_nitro: str | None
+    part_org_nitro_method: str | None
+    petroleum_hydrocarb: str | None
+    petroleum_hydrocarb_method: str | None
+    phaeopigments: float | None
+    phaeopigments_method: str | None
+    phosphate: float | str | None
+    phosphate_method: str | None
+    pigments: float | str | None
+    pigments_method: str | None
+    pressure: float | str | None
+    pressure_method: str | None
+    primary_prod: str | None = None  # Not taken for soft sediments
+    primary_prod_method: str | None = None  # Not taken for soft sediments
+    silicate: float | None
+    silicate_method: str | None
+    sulfate: str | None
+    sulfate_method: str | None
+    sulfide: str | None
+    sulfide_method: str | None
+    turbidity: float | None = None  # Not taken for soft sediments
+    turbidity_method: str | None = None  # Not taken for soft sediments
+    water_current: str | None
+    water_current_method: str | None
 
     # Let's get rid of empty strings first:
     @model_validator(mode="before")

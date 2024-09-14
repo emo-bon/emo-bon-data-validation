@@ -1,16 +1,19 @@
-import math
+from __future__ import annotations
+
 import datetime
-from pydantic import (
-    BaseModel,
-    field_validator,
-    model_validator,
-    ValidationError,
-    Field,
-    AliasChoices,
-    field_serializer,
-    validator,
-)
-from typing import Any, Optional, Union
+import math
+from typing import Any
+from typing import Optional
+from typing import Union
+
+from pydantic import AliasChoices
+from pydantic import BaseModel
+from pydantic import Field
+from pydantic import field_serializer
+from pydantic import field_validator
+from pydantic import model_validator
+from pydantic import ValidationError
+from pydantic import validator
 
 # The type Optional[x] is a shorthand for Union[x, None].
 # Optional[x] can also be used to specify a required field that can take None as a value.
@@ -24,48 +27,49 @@ from typing import Any, Optional, Union
 
 
 class Model(BaseModel):
-    source_mat_id_orig: Optional[str]
-    samp_description: Optional[str]
-    tax_id: Union[
-        int, float, None
-    ]  # Serialised to int, floats are due to NaNs being present
-    scientific_name: Optional[str]
-    investigation_type: Optional[str]
-    env_material: Optional[str]
-    collection_date: Optional[str]  # Serialised to datetime.date
-    sampling_event: Optional[str]
-    sampl_person: Optional[str]
-    sampl_person_orcid: Optional[str]
-    tidal_stage: Optional[str]
-    depth: Union[str, float, None]  # TODO serialise to str
-    replicate: Union[str, int, float, None]  # Serialised to str
-    samp_size_vol: Union[int, float, None] = None  # TODO serialise to float
-    time_fi: Union[str, float, None] = None  # TODO serialise to str
-    size_frac: Union[str, float, None] = None  # TODO serialise to str
-    size_frac_low: Optional[float]
-    size_frac_up: Optional[float]
-    membr_cut: Union[bool, str, None] = None  # Serialised as bool
-    samp_collect_device: Optional[str]
-    samp_mat_process: Optional[str]
-    samp_mat_process_dev: Optional[str]
-    samp_store_date: Optional[str]  # Serialised to datetime.date
-    samp_store_loc: Optional[str]
-    samp_store_temp: Optional[int]
-    store_person: Optional[str]
-    store_person_orcid: Optional[str] = None
-    other_person: Optional[str]
-    other_person_orcid: Optional[str]
-    long_store: Union[bool, str, None]  # Serialised to bool
-    ship_date: Optional[str]  # Serialised to datetime.date
-    arr_date_hq: Optional[str] = None  # Serialised to datetime.date
-    store_temp_hq: Union[int, str, None]  # Serialised to int
-    ship_date_seq: Optional[str]  # Serialised to date
-    arr_date_seq: Optional[str]  # Serialised to date
-    failure: Union[bool, str, None]  # Serialised to bool
-    failure_comment: Optional[str]
-    ENA_accession_number_sample: Optional[str] = None
+    source_mat_id_orig: str | None
+    samp_description: str | None
+    tax_id: (
+        int | float | None
+    )  # Serialised to int, floats are due to NaNs being present
+    scientific_name: str | None
+    investigation_type: str | None
+    env_material: str | None
+    collection_date: str | None  # Serialised to datetime.date
+    sampling_event: str | None
+    sampl_person: str | None
+    sampl_person_orcid: str | None
+    tidal_stage: str | None
+    depth: str | float | None  # TODO serialise to str
+    replicate: str | int | float | None  # Serialised to str
+    samp_size_vol: int | float | None = None  # TODO serialise to float
+    time_fi: str | float | None = None  # TODO serialise to str
+    size_frac: str | float | None = None  # TODO serialise to str
+    size_frac_low: float | None
+    size_frac_up: float | None
+    membr_cut: bool | str | None = None  # Serialised as bool
+    samp_collect_device: str | None
+    samp_mat_process: str | None
+    samp_mat_process_dev: str | None
+    samp_store_date: str | None  # Serialised to datetime.date
+    samp_store_loc: str | None
+    samp_store_temp: int | None
+    store_person: str | None
+    store_person_orcid: str | None = None
+    other_person: str | None
+    other_person_orcid: str | None
+    long_store: bool | str | None  # Serialised to bool
+    ship_date: str | None  # Serialised to datetime.date
+    arr_date_hq: str | None = None  # Serialised to datetime.date
+    store_temp_hq: int | str | None  # Serialised to int
+    ship_date_seq: str | None  # Serialised to date
+    arr_date_seq: str | None  # Serialised to date
+    failure: bool | str | None  # Serialised to bool
+    failure_comment: str | None
+    ENA_accession_number_sample: str | None = None
     source_mat_id: str = Field(
-        ..., validation_alias=AliasChoices("source_mat_id", "source_material_id")
+        ...,
+        validation_alias=AliasChoices("source_mat_id", "source_material_id"),
     )
 
     # Let's get rid of empty strings first:
@@ -109,9 +113,10 @@ class Model(BaseModel):
 
     @field_validator("membr_cut", "failure", "long_store")
     @classmethod
-    def coerce_to_bool(cls, value: Optional[str]) -> Optional[bool]:
+    def coerce_to_bool(cls, value: str | None) -> bool | None:
         if (
-            value == "N\t2022-10-17\t2022-10-19\t-70\t2023-06-01\t2023-06-01\t\t\t"
+            value
+            == "N\t2022-10-17\t2022-10-19\t-70\t2023-06-01\t2023-06-01\t\t\t"
         ):  # In VB long_store
             return None
         if not value:
@@ -137,7 +142,7 @@ class Model(BaseModel):
 
     @field_validator("store_temp_hq")
     @classmethod
-    def coerce_store_temp_hq(cls, value: Union[int, str]) -> int:
+    def coerce_store_temp_hq(cls, value: int | str) -> int:
         if isinstance(value, int):
             return value
         elif isinstance(value, str):
@@ -158,7 +163,7 @@ class Model(BaseModel):
     # Here we assume all None's (replaced NaNs, see above) are supposed to be "blank"
     @field_validator("replicate")
     @classmethod
-    def coerce_replicate_to_string(cls, value: Union[int, float, None]) -> str:
+    def coerce_replicate_to_string(cls, value: int | float | None) -> str:
         # print(f"{value=} is type {type(value)}")
         if not value:
             return "blank"
@@ -178,7 +183,7 @@ class Model(BaseModel):
         "arr_date_seq",
     )
     @classmethod
-    def coerce_the_date_strings(cls, value: Optional[str]) -> datetime.date:
+    def coerce_the_date_strings(cls, value: str | None) -> datetime.date:
         if not value:
             return
         if isinstance(value, str):
@@ -202,7 +207,7 @@ class Model(BaseModel):
     # You cannot use standard serialisation because you end up with mixed "int" and "float" sheets
     @field_validator("tax_id")
     @classmethod
-    def coerce_tax_id(cls, value: Union[int, float, None]) -> Optional[int]:
+    def coerce_tax_id(cls, value: int | float | None) -> int | None:
         # print(f"Type of {value} is {type(value)}")
         if not value:
             return None
@@ -221,7 +226,7 @@ class Model(BaseModel):
         "ship_date_seq",
         "arr_date_seq",
     )
-    def serialize_dates(self, value: Optional[datetime.date]) -> Optional[str]:
+    def serialize_dates(self, value: datetime.date | None) -> str | None:
         if isinstance(value, datetime.date):
             return value.strftime("%Y-%m-%d")
         else:
@@ -229,8 +234,8 @@ class Model(BaseModel):
 
     @field_serializer("depth", "time_fi", "size_frac")
     def serialize_str_float_to_str(
-        self, value: Union[str, float, None]
-    ) -> Optional[str]:
+        self, value: str | float | None
+    ) -> str | None:
         if isinstance(value, str):
             return value
         elif isinstance(value, float):
@@ -240,8 +245,8 @@ class Model(BaseModel):
 
     @field_serializer("samp_size_vol")
     def serialize_int_float_to_float(
-        self, value: Union[int, float, None]
-    ) -> Optional[float]:
+        self, value: int | float | None
+    ) -> float | None:
         if isinstance(value, float):
             return value
         elif isinstance(value, int):
@@ -272,36 +277,36 @@ class StrictModel(Model):
     scientific_name: str
     investigation_type: str
     env_material: str
-    collection_date: Optional[str]
+    collection_date: str | None
     sampling_event: str
     sampl_person: str
-    sampl_person_orcid: Optional[str]
-    tidal_stage: Optional[str]
+    sampl_person_orcid: str | None
+    tidal_stage: str | None
     depth: int
     replicate: str
     samp_size_vol: int
-    time_fi: Union[str, int]
+    time_fi: str | int
     size_frac: str
     size_frac_low: float  # Yes really a float!
     size_frac_up: float  # Yes really a float!
-    membr_cut: Union[bool, str, None] = None
+    membr_cut: bool | str | None = None
     samp_collect_device: str
     samp_mat_process: str
     samp_mat_process_dev: str
-    samp_store_date: Optional[str]
+    samp_store_date: str | None
     samp_store_loc: str
     samp_store_temp: int
     store_person: str
-    store_person_orcid: Optional[str]
-    other_person: Optional[str]
-    other_person_orcid: Optional[str]
-    long_store: Union[bool, str, None] = None
-    ship_date: Optional[str]
-    arr_date_hq: Optional[str]
+    store_person_orcid: str | None
+    other_person: str | None
+    other_person_orcid: str | None
+    long_store: bool | str | None = None
+    ship_date: str | None
+    arr_date_hq: str | None
     store_temp_hq: int
-    ship_date_seq: Optional[str]
-    arr_date_seq: Optional[str]
-    failure: Union[bool, str, None] = None
+    ship_date_seq: str | None
+    arr_date_seq: str | None
+    failure: bool | str | None = None
     failure_comment: str
     ENA_accession_number_sample: str
     source_mat_id: str
@@ -311,44 +316,44 @@ class StrictModel(Model):
 
 
 class SemiStrictModel(Model):
-    source_mat_id_orig: Optional[str]
-    samp_description: Optional[str]
-    tax_id: Optional[int]
-    scientific_name: Optional[str]
-    investigation_type: Optional[str]
-    env_material: Optional[str]
-    collection_date: Optional[str]
-    sampling_event: Optional[str]
-    sampl_person: Optional[str]
-    sampl_person_orcid: Optional[str]
-    tidal_stage: Optional[str]
-    depth: Union[float, int, None]
-    replicate: Union[
-        str, int, float, None
-    ]  # Rep int or "blank", hence str raw sheets are broken
-    samp_size_vol: Union[float, int, None]
-    time_fi: Union[str, int, None]  # Either str "fi" or integer!
-    size_frac: Optional[str]
-    size_frac_low: Union[float, int, None]
-    size_frac_up: Union[float, int, None]
-    membr_cut: Union[bool, str, None] = None
-    samp_collect_device: Optional[str]
-    samp_mat_process: Optional[str]
-    samp_mat_process_dev: Optional[str]
-    samp_store_date: Optional[str]
-    samp_store_loc: Optional[str]
-    samp_store_temp: Union[float, int, None]
-    store_person: Optional[str]
-    store_person_orcid: Optional[str]
-    other_person: Optional[str]
-    other_person_orcid: Optional[str]
-    long_store: Union[bool, str, None] = None
-    ship_date: Optional[str]
-    arr_date_hq: Optional[str]
-    store_temp_hq: Union[float, int, None]
-    ship_date_seq: Optional[str]
-    arr_date_seq: Optional[str]
-    failure: Union[bool, str, None] = None
-    failure_comment: Optional[str]
-    ENA_accession_number_sample: Optional[str]
-    source_mat_id: Optional[str]
+    source_mat_id_orig: str | None
+    samp_description: str | None
+    tax_id: int | None
+    scientific_name: str | None
+    investigation_type: str | None
+    env_material: str | None
+    collection_date: str | None
+    sampling_event: str | None
+    sampl_person: str | None
+    sampl_person_orcid: str | None
+    tidal_stage: str | None
+    depth: float | int | None
+    replicate: (
+        str | int | float | None
+    )  # Rep int or "blank", hence str raw sheets are broken
+    samp_size_vol: float | int | None
+    time_fi: str | int | None  # Either str "fi" or integer!
+    size_frac: str | None
+    size_frac_low: float | int | None
+    size_frac_up: float | int | None
+    membr_cut: bool | str | None = None
+    samp_collect_device: str | None
+    samp_mat_process: str | None
+    samp_mat_process_dev: str | None
+    samp_store_date: str | None
+    samp_store_loc: str | None
+    samp_store_temp: float | int | None
+    store_person: str | None
+    store_person_orcid: str | None
+    other_person: str | None
+    other_person_orcid: str | None
+    long_store: bool | str | None = None
+    ship_date: str | None
+    arr_date_hq: str | None
+    store_temp_hq: float | int | None
+    ship_date_seq: str | None
+    arr_date_seq: str | None
+    failure: bool | str | None = None
+    failure_comment: str | None
+    ENA_accession_number_sample: str | None
+    source_mat_id: str | None

@@ -1,9 +1,13 @@
 # This is a validator for the "observatory" sheet of the EMO_BON_Metadata Google Sheets
+from __future__ import annotations
 
 import math
-from datetime import date
-from typing import Any, Optional, Union
-from pydantic import BaseModel, model_validator
+from typing import Any
+from typing import Optional
+from typing import Union
+
+from pydantic import BaseModel
+from pydantic import model_validator
 
 # The type Optional[x] is a shorthand for Union[x, None].
 # Optional[x] can also be used to specify a required field that can take None as a value.
@@ -17,31 +21,31 @@ from pydantic import BaseModel, model_validator
 
 
 class Model(BaseModel):
-    project_name: Optional[str]
-    latitude: Optional[float]
-    longitude: Optional[float]
-    geo_loc_name: Optional[str]
-    loc_broad_ocean: Optional[str]
-    loc_broad_ocean_mrgid: Optional[int]
-    loc_regional: Optional[str]
-    loc_regional_mrgid: Optional[int]
-    loc_loc: Optional[str]
-    loc_loc_mrgid: Union[str, int]
-    env_broad_biome: Optional[str]
-    env_local: Optional[str]
-    env_package: Optional[str]
-    tot_depth_water_col: Optional[float]
-    organization: Optional[str]
-    organization_country: Optional[str]
-    organization_edmoid: Union[str, int, None]
+    project_name: str | None
+    latitude: float | None
+    longitude: float | None
+    geo_loc_name: str | None
+    loc_broad_ocean: str | None
+    loc_broad_ocean_mrgid: int | None
+    loc_regional: str | None
+    loc_regional_mrgid: int | None
+    loc_loc: str | None
+    loc_loc_mrgid: str | int
+    env_broad_biome: str | None
+    env_local: str | None
+    env_package: str | None
+    tot_depth_water_col: float | None
+    organization: str | None
+    organization_country: str | None
+    organization_edmoid: str | int | None
     obs_id: str
-    wa_id: Optional[str] = None
-    extra_site_info: Optional[str]
-    contact_name: Optional[str]
-    contact_email: Optional[str]
-    contact_orcid: Optional[str]
-    ENA_accession_number_umbrella: Optional[str] = None
-    ENA_accession_number_project: Optional[str] = None
+    wa_id: str | None = None
+    extra_site_info: str | None
+    contact_name: str | None
+    contact_email: str | None
+    contact_orcid: str | None
+    ENA_accession_number_umbrella: str | None = None
+    ENA_accession_number_project: str | None = None
 
     # Let's get rid of empty strings first:
     @model_validator(mode="before")

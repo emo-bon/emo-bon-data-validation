@@ -1,16 +1,17 @@
-import math
+from __future__ import annotations
+
 import datetime
-from pydantic import (
-    BaseModel,
-    field_validator,
-    model_validator,
-    ValidationError,
-    Field,
-    AliasChoices,
-    field_serializer,
-    HttpUrl,
-)
+import math
 from typing import Any
+
+from pydantic import AliasChoices
+from pydantic import BaseModel
+from pydantic import Field
+from pydantic import field_serializer
+from pydantic import field_validator
+from pydantic import HttpUrl
+from pydantic import model_validator
+from pydantic import ValidationError
 
 
 class ModelGithub(BaseModel):
@@ -53,7 +54,8 @@ class ModelGithub(BaseModel):
     failure_comment: str | None
     ENA_accession_number_sample: str | None = None
     source_mat_id: str = Field(
-        ..., validation_alias=AliasChoices("source_mat_id", "source_material_id")
+        ...,
+        validation_alias=AliasChoices("source_mat_id", "source_material_id"),
     )
 
     # Let's get rid of empty strings first:
@@ -171,7 +173,9 @@ class ModelGithub(BaseModel):
         else:
             raise ValueError(f"Unrecognised value: {value}")
 
-    @field_validator("collection_date", "samp_store_date", "ship_date", "arr_date_hq")
+    @field_validator(
+        "collection_date", "samp_store_date", "ship_date", "arr_date_hq"
+    )
     @classmethod
     def coerce_the_date_strings(cls, value: str | None) -> datetime.date:
         if not value:
@@ -193,7 +197,9 @@ class ModelGithub(BaseModel):
         else:
             raise ValueError(f"Unrecognised value: {value}")
 
-    @field_serializer("collection_date", "samp_store_date", "ship_date", "arr_date_hq")
+    @field_serializer(
+        "collection_date", "samp_store_date", "ship_date", "arr_date_hq"
+    )
     def serialize_dates(self, value: datetime.date | None) -> str | None:
         if isinstance(value, datetime.date):
             return value.strftime("%Y-%m-%d")
@@ -284,7 +290,8 @@ class StrictModelGithub(BaseModel):
     def coerce_to_bool(cls, value: str | bool | None) -> bool | None:
 
         if (
-            value == "N\t2022-10-17\t2022-10-19\t-70\t2023-06-01\t2023-06-01\t\t\t"
+            value
+            == "N\t2022-10-17\t2022-10-19\t-70\t2023-06-01\t2023-06-01\t\t\t"
         ):  # In VB long_store
             return None
         if not value:
@@ -308,7 +315,9 @@ class StrictModelGithub(BaseModel):
                 else:
                     return False
 
-    @field_validator("collection_date", "samp_store_date", "ship_date", "arr_date_hq")
+    @field_validator(
+        "collection_date", "samp_store_date", "ship_date", "arr_date_hq"
+    )
     @classmethod
     def coerce_the_date_strings(cls, value: str | None) -> datetime.date:
         if not value:
@@ -416,7 +425,8 @@ class SemiStrictModelGithub(BaseModel):
     def coerce_to_bool(cls, value: str | bool | None) -> bool | None:
 
         if (
-            value == "N\t2022-10-17\t2022-10-19\t-70\t2023-06-01\t2023-06-01\t\t\t"
+            value
+            == "N\t2022-10-17\t2022-10-19\t-70\t2023-06-01\t2023-06-01\t\t\t"
         ):  # In VB long_store
             return None
         if not value:
@@ -440,7 +450,9 @@ class SemiStrictModelGithub(BaseModel):
                 else:
                     return False
 
-    @field_validator("collection_date", "samp_store_date", "ship_date", "arr_date_hq")
+    @field_validator(
+        "collection_date", "samp_store_date", "ship_date", "arr_date_hq"
+    )
     @classmethod
     def coerce_the_date_strings(cls, value: str | None) -> datetime.date:
         if not value:
@@ -462,7 +474,9 @@ class SemiStrictModelGithub(BaseModel):
         else:
             raise ValueError(f"Unrecognised value: {value}")
 
-    @field_serializer("collection_date", "samp_store_date", "ship_date", "arr_date_hq")
+    @field_serializer(
+        "collection_date", "samp_store_date", "ship_date", "arr_date_hq"
+    )
     def serialize_dates(self, value: datetime.date | None) -> str | None:
         if isinstance(value, datetime.date):
             return value.strftime("%Y-%m-%d")

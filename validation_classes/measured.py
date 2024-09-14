@@ -1,18 +1,13 @@
 from __future__ import annotations
 
-import datetime
 import math
 from typing import Any
-from typing import Optional
-from typing import Union
 
 from pydantic import AliasChoices
 from pydantic import BaseModel
 from pydantic import Field
-from pydantic import field_serializer
 from pydantic import field_validator
 from pydantic import model_validator
-from pydantic import ValidationError
 
 
 class Model(BaseModel):
@@ -27,7 +22,7 @@ class Model(BaseModel):
     sea_subsurf_temp: (
         float | str | None
     ) = None  # Not taken for soft sediments
-    sea_subsurf_temp_method: None | (str) = None  # Not taken for soft sediments
+    sea_subsurf_temp_method: None | (str) = None  # Not taken for sediments
     sea_surf_salinity: (
         float | str | None
     ) = None  # Not taken for soft sediments
@@ -107,7 +102,6 @@ class Model(BaseModel):
     @classmethod
     def contains_a_blank_string(cls, model: Any) -> Any:
         for key in model:
-            # print(f"Key {key} has value {model[key]} is type {type(model[key])}")
             # print(f"Value in blank_strings {value}")
             if isinstance(model[key], str):
                 if model[key].strip() == "":

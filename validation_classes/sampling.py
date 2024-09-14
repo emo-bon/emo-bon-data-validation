@@ -3,8 +3,6 @@ from __future__ import annotations
 import datetime
 import math
 from typing import Any
-from typing import Optional
-from typing import Union
 
 from pydantic import AliasChoices
 from pydantic import BaseModel
@@ -12,18 +10,6 @@ from pydantic import Field
 from pydantic import field_serializer
 from pydantic import field_validator
 from pydantic import model_validator
-from pydantic import ValidationError
-from pydantic import validator
-
-# The type Optional[x] is a shorthand for Union[x, None].
-# Optional[x] can also be used to specify a required field that can take None as a value.
-# The Union type allows a model attribute to accept different types
-# If a field is missing from a sheet "=<value>" will add it and give it a default value
-
-# TODO: add checks for ranges that the low value is lower that the upper value
-
-# Types have been compared to https://github.com/emo-bon/observatory-profile/blob/main/logsheet_schema_extended.csv
-# Most of the out types are the in-types for the triples, apart from the bools and datetime.date fields
 
 
 class Model(BaseModel):
@@ -77,7 +63,6 @@ class Model(BaseModel):
     @classmethod
     def contains_a_blank_string(cls, model: Any) -> Any:
         for key in model:
-            # print(f"Key {key} has value {model[key]} is type {type(model[key])}")
             # print(f"Value in blank_strings {value}")
             if isinstance(model[key], str):
                 if model[key].strip() == "":
@@ -97,7 +82,8 @@ class Model(BaseModel):
         return model
 
     # Get rid of "NA" "N/A"'s
-    # These are in the original sheets and does not take account of pandas.NA types
+    # These are in the original sheets and does not
+    # take account of pandas.NA types
     # there should be no pandas.NA anyway
     @model_validator(mode="before")
     @classmethod
@@ -157,13 +143,19 @@ class Model(BaseModel):
                 except ValueError:
                     raise ValueError(f"Unrecognised value: {value}")
 
-    # This is a horrible hack but Googlesheets interprets the work "blank" as NULL/NaN
-    # when retrieving the sheet using this old "visualisation" method?!
-    # The values in sheets are ints but are coerced to floats by pandas because of the NaNs
-    # Here we assume all None's (replaced NaNs, see above) are supposed to be "blank"
     @field_validator("replicate")
     @classmethod
     def coerce_replicate_to_string(cls, value: int | float | None) -> str:
+        # pylint: disable=unsubscriptable-object
+        """
+        Coerces replicate to a string, or "blank" if None
+
+        Google sheets interprets the word "blank" as NULL/NaN
+        when retrieving the sheet using the old "visualisation" method?!
+        The values in sheets are ints but are coerced to floats by pandas
+        because of the NaNs. Here we assume all None's (replaced NaNs,
+        see above) are supposed to be "blank"
+        """
         # print(f"{value=} is type {type(value)}")
         if not value:
             return "blank"
@@ -203,8 +195,9 @@ class Model(BaseModel):
         else:
             raise ValueError(f"Unrecognised value: {value}")
 
-    # Some sheets e.g. OSD74 have NaNs in this field and the values get read as floats by pandas
-    # You cannot use standard serialisation because you end up with mixed "int" and "float" sheets
+    # Some sheets e.g. OSD74 have NaNs in this field and the
+    # values get read as floats by pandasYou cannot use standard
+    # serialisation because you end up with mixed "int" and "float" sheets
     @field_validator("tax_id")
     @classmethod
     def coerce_tax_id(cls, value: int | float | None) -> int | None:
@@ -267,7 +260,7 @@ class Model(BaseModel):
     #        return int(value) # this should be safe because the floats are coerced integers
 
 
-################# STRICT ###################################################################
+# STRICT #########################################################
 
 
 class StrictModel(Model):
@@ -312,7 +305,7 @@ class StrictModel(Model):
     source_mat_id: str
 
 
-################# SEMI-STRICT ####################################################
+# SEMI-STRICT ####################################################
 
 
 class SemiStrictModel(Model):

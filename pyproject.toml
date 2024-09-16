@@ -12,13 +12,29 @@ pandas = "^2.2.2"
 pydantic = "^2.9.1"
 validators = "^0.34.0"
 black = {extras = ["jupyter"], version = "^24.8.0"}
+ruff = "^0.6.5"
 
 [tool.poetry.group.dev.dependencies]
 ipykernel = "^6.29.5"
 pre-commit = "^3.8.0"
 
-[tool.black]
-line-length = 80
+[tool.ruff.lint]
+extend-select = [
+    # pyupgrade 
+    "UP",
+    # pydocstyle
+    "E",   
+    "W",
+    # pyflakes
+    "F",
+    # flake8
+    "S",
+    "B",
+    "SIM",
+    # isort
+    "I",
+]
+ignore = ["E501"]
 
 [build-system]
 requires = ["poetry-core"]

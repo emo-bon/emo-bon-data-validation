@@ -12,3 +12,4 @@ emo-bon-data-validation.code-workspace
 *.swp
 .vscode
 .pre-commit-config.yaml
+.ruff_cache

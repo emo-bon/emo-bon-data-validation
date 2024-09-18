@@ -7,8 +7,6 @@ from typing import Any
 
 from pydantic import BaseModel, model_validator
 
-# TODO: add checks for ranges that the low value is lower that the upper value
-
 
 class Model(BaseModel):
     project_name: str | None

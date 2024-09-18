@@ -8,6 +8,7 @@ from pydantic import (
     AliasChoices,
     BaseModel,
     Field,
+    ValidationInfo,
     field_serializer,
     field_validator,
     model_validator,
@@ -204,6 +205,23 @@ class Model(BaseModel):
             return int(
                 value
             )  # this should be safe because the floats are coerced integers
+
+    # Check to see if size_frac_up is greater than size_frac_low
+    @field_validator("size_frac_up")
+    @classmethod
+    def check_size_frac(cls, value: float | None, info: ValidationInfo) -> float | None:
+        if not value:
+            return None
+        if value < 0:
+            raise ValueError(f"Value is less than 0: {value}")
+
+        size_frac_low = info.data.get("size_frac_low")
+        if size_frac_low is not None and value < size_frac_low:
+            raise ValueError(
+                f"size_frac_up ({value}) cannot be less than size_frac_low ({size_frac_low})"
+            )
+
+        return value
 
     @field_serializer(
         "collection_date",

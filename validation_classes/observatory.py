@@ -5,8 +5,7 @@ from __future__ import annotations
 import math
 from typing import Any
 
-from pydantic import BaseModel
-from pydantic import model_validator
+from pydantic import BaseModel, model_validator
 
 # TODO: add checks for ranges that the low value is lower that the upper value
 
@@ -44,9 +43,8 @@ class Model(BaseModel):
     def contains_a_blank_string(cls, model: Any) -> Any:
         for key in model:
             # print(f"Value in blank_strings {value}")
-            if isinstance(model[key], str):
-                if model[key].strip() == "":
-                    model[key] = None
+            if isinstance(model[key], str) and model[key].strip() == "":
+                model[key] = None
         return model
 
     # Replace NaNs
@@ -54,9 +52,8 @@ class Model(BaseModel):
     @classmethod
     def replace_NaNs(cls, model: Any) -> Any:
         for key in model:
-            if isinstance(model[key], float):
-                if math.isnan(model[key]):
-                    model[key] = None
+            if isinstance(model[key], float) and math.isnan(model[key]):
+                model[key] = None
             # print(f"Value in NaNs {model[key]}")
         # print(f"Final value { | Nonemodel}")
         return model

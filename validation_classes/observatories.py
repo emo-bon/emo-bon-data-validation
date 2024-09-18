@@ -4,13 +4,15 @@ import math
 from datetime import date
 from typing import Any
 
-from pydantic import AliasChoices
-from pydantic import BaseModel
-from pydantic import Field
-from pydantic import field_serializer
-from pydantic import field_validator
-from pydantic import model_validator
-from pydantic import ValidationError
+from pydantic import (
+    AliasChoices,
+    BaseModel,
+    Field,
+    ValidationError,
+    field_serializer,
+    field_validator,
+    model_validator,
+)
 
 
 class Model(BaseModel):
@@ -18,22 +20,16 @@ class Model(BaseModel):
     country: str
     observatory_name: str = Field(
         ...,
-        validation_alias=AliasChoices(
-            "EMOBON_observatory_name", "observatory_name"
-        ),
+        validation_alias=AliasChoices("EMOBON_observatory_name", "observatory_name"),
     )
     observatory_id: str = Field(
         ...,
-        validation_alias=AliasChoices(
-            "EMOBON_observatory_id", "observatory_id"
-        ),
+        validation_alias=AliasChoices("EMOBON_observatory_id", "observatory_id"),
     )
     start_date: str = Field(
         ..., validation_alias=AliasChoices("startdate", "start_date")
     )
-    end_date: str | None = Field(
-        validation_alias=AliasChoices("enddate", "end_date")
-    )
+    end_date: str | None = Field(validation_alias=AliasChoices("enddate", "end_date"))
     water_column: str | bool = Field(
         ..., validation_alias=AliasChoices("Water_Column", "water_column")
     )
@@ -56,9 +52,7 @@ class Model(BaseModel):
     )
     contact_person_email: str = Field(
         ...,
-        validation_alias=AliasChoices(
-            "contact person email", "contact_person_email"
-        ),
+        validation_alias=AliasChoices("contact person email", "contact_person_email"),
     )
     ena_accession_number_umbrella: str | None = Field(
         ...,
@@ -72,9 +66,7 @@ class Model(BaseModel):
             "ENA_accession_number_project", "ena_accession_number_project"
         ),
     )
-    core: str | bool = Field(
-        ..., validation_alias=AliasChoices("EMOBON_core", "core")
-    )
+    core: str | bool = Field(..., validation_alias=AliasChoices("EMOBON_core", "core"))
 
     # Let's get rid of empty strings first:
     @model_validator(mode="before")
@@ -82,9 +74,8 @@ class Model(BaseModel):
     def contains_a_blank_string(cls, model: Any) -> Any:
         for key in model:
             # print(f"Value in blank_strings {value}")
-            if isinstance(model[key], str):
-                if model[key].strip() == "":
-                    model[key] = None
+            if isinstance(model[key], str) and model[key].strip() == "":
+                model[key] = None
         return model
 
     # God I hate NaNs
@@ -92,16 +83,13 @@ class Model(BaseModel):
     @classmethod
     def replace_NaNs(cls, model: Any) -> Any:
         for key in model:
-            if isinstance(model[key], float):
-                if math.isnan(model[key]):
-                    model[key] = None
+            if isinstance(model[key], float) and math.isnan(model[key]):
+                model[key] = None
             # print(f"Value in NaNs {model[key]}")
         # print(f"Final value {model}")
         return model
 
-    @field_validator(
-        "water_column", "soft_substrates", "hard_substrates", "core"
-    )
+    @field_validator("water_column", "soft_substrates", "hard_substrates", "core")
     @classmethod
     def coerce_to_bool(cls, value: str | bool) -> bool:
         if isinstance(value, bool):
@@ -109,12 +97,9 @@ class Model(BaseModel):
         else:
             vl = value.lower()
             if vl not in ["y", "n"]:
-                raise ValidationError(f"What the hell is this: {value}")
+                raise ValidationError(f"Error: unrecognised value {value}")
             else:
-                if vl == "y":
-                    return True
-                else:
-                    return False
+                return vl == "y"
 
     @field_validator("start_date")
     @classmethod
@@ -124,7 +109,7 @@ class Model(BaseModel):
             value = date(bits[2], bits[1], bits[0])
             return value
         else:
-            raise ValidationError(f"What the hell is this: {value}")
+            raise ValidationError(f"Error: unrecognised value {value}")
 
     @field_validator("end_date")
     @classmethod
@@ -136,7 +121,7 @@ class Model(BaseModel):
                 value = date(bits[2], bits[1], bits[0])
                 return value
             else:
-                raise ValidationError(f"What the hell is this: {value}")
+                raise ValidationError(f"Error: unrecognised value {value}")
         else:
             return None
 

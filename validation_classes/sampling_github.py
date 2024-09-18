@@ -4,14 +4,15 @@ import datetime
 import math
 from typing import Any
 
-from pydantic import AliasChoices
-from pydantic import BaseModel
-from pydantic import Field
-from pydantic import field_serializer
-from pydantic import field_validator
-from pydantic import HttpUrl
-from pydantic import model_validator
-from pydantic import ValidationError
+from pydantic import (
+    AliasChoices,
+    BaseModel,
+    Field,
+    HttpUrl,
+    field_serializer,
+    field_validator,
+    model_validator,
+)
 
 
 class ModelGithub(BaseModel):
@@ -65,9 +66,8 @@ class ModelGithub(BaseModel):
         for key in model:
             # print(f"Key {key} has value {model[key]} is type {type(model[key])}")
             # print(f"Value in blank_strings {value}")
-            if isinstance(model[key], str):
-                if model[key].strip() == "":
-                    model[key] = None
+            if isinstance(model[key], str) and model[key].strip() == "":
+                model[key] = None
         return model
 
     # God I hate NaNs
@@ -75,9 +75,8 @@ class ModelGithub(BaseModel):
     @classmethod
     def replace_NaNs(cls, model: Any) -> Any:
         for key in model:
-            if isinstance(model[key], float):
-                if math.isnan(model[key]):
-                    model[key] = None
+            if isinstance(model[key], float) and math.isnan(model[key]):
+                model[key] = None
             # print(f"Value in NaNs {model[key]}")
         # print(f"Final value { | Nonemodel}")
         return model
@@ -121,10 +120,7 @@ class ModelGithub(BaseModel):
             ]:  # "\u03c4" is a Greek Tau in ROSKOGO
                 raise ValueError(f"Unrecognised value: {value}")
             else:
-                if vl in ["y", "t"]:
-                    return True
-                else:
-                    return False
+                return vl in ["y", "t", "\u03c4"]
 
     # The QC is actually introducing new errors not present in the original sheets
     @field_validator("samp_store_temp")
@@ -141,8 +137,8 @@ class ModelGithub(BaseModel):
                 if value[-1] == "C":
                     try:
                         return int(value[:-2])
-                    except ValueError:
-                        raise ValueError(f"Unrecognised value: {value}")
+                    except ValueError as err:
+                        raise ValueError(f"Unrecognised value: {value}") from err
 
     @field_validator("store_temp_hq")
     @classmethod
@@ -158,8 +154,8 @@ class ModelGithub(BaseModel):
                 try:
                     datetime.datetime.strptime(value, "%Y-%m-%d")
                     return None
-                except ValueError:
-                    raise ValueError(f"Unrecognised value: {value}")
+                except ValueError as err:
+                    raise ValueError(f"Unrecognised value: {value}") from err
 
     @field_validator("replicate")
     @classmethod
@@ -173,9 +169,7 @@ class ModelGithub(BaseModel):
         else:
             raise ValueError(f"Unrecognised value: {value}")
 
-    @field_validator(
-        "collection_date", "samp_store_date", "ship_date", "arr_date_hq"
-    )
+    @field_validator("collection_date", "samp_store_date", "ship_date", "arr_date_hq")
     @classmethod
     def coerce_the_date_strings(cls, value: str | None) -> datetime.date:
         if not value:
@@ -188,18 +182,16 @@ class ModelGithub(BaseModel):
                 try:
                     # Day, month, year - 23/10/2023
                     return datetime.datetime.strptime(value, "%d/%m/%Y")
-                except ValueError:
+                except ValueError as err:
                     # NRMCB has "expected 06-2024"
                     if "expected" in value.lower():
                         return None
                     else:
-                        raise ValueError(f"Unrecognised value: {value}")
+                        raise ValueError(f"Unrecognised value: {value}") from err
         else:
             raise ValueError(f"Unrecognised value: {value}")
 
-    @field_serializer(
-        "collection_date", "samp_store_date", "ship_date", "arr_date_hq"
-    )
+    @field_serializer("collection_date", "samp_store_date", "ship_date", "arr_date_hq")
     def serialize_dates(self, value: datetime.date | None) -> str | None:
         if isinstance(value, datetime.date):
             return value.strftime("%Y-%m-%d")
@@ -255,9 +247,8 @@ class StrictModelGithub(BaseModel):
         for key in model:
             # print(f"Key {key} has value {model[key]} is type {type(model[key])}")
             # print(f"Value in blank_strings {value}")
-            if isinstance(model[key], str):
-                if model[key].strip() == "":
-                    model[key] = None
+            if isinstance(model[key], str) and model[key].strip() == "":
+                model[key] = None
         return model
 
     # God I hate NaNs
@@ -265,9 +256,8 @@ class StrictModelGithub(BaseModel):
     @classmethod
     def replace_NaNs(cls, model: Any) -> Any:
         for key in model:
-            if isinstance(model[key], float):
-                if math.isnan(model[key]):
-                    model[key] = None
+            if isinstance(model[key], float) and math.isnan(model[key]):
+                model[key] = None
             # print(f"Value in NaNs {model[key]}")
         # print(f"Final value { | Nonemodel}")
         return model
@@ -288,10 +278,8 @@ class StrictModelGithub(BaseModel):
     @field_validator("membr_cut", "long_store", "failure")
     @classmethod
     def coerce_to_bool(cls, value: str | bool | None) -> bool | None:
-
         if (
-            value
-            == "N\t2022-10-17\t2022-10-19\t-70\t2023-06-01\t2023-06-01\t\t\t"
+            value == "N\t2022-10-17\t2022-10-19\t-70\t2023-06-01\t2023-06-01\t\t\t"
         ):  # In VB long_store
             return None
         if not value:
@@ -310,14 +298,9 @@ class StrictModelGithub(BaseModel):
             ]:  # "\u03c4" is a Greek Tau in ROSKOGO
                 raise ValueError(f"Unrecognised value: {value}")
             else:
-                if vl in ["y", "t"]:
-                    return True
-                else:
-                    return False
+                return vl in ["y", "t"]
 
-    @field_validator(
-        "collection_date", "samp_store_date", "ship_date", "arr_date_hq"
-    )
+    @field_validator("collection_date", "samp_store_date", "ship_date", "arr_date_hq")
     @classmethod
     def coerce_the_date_strings(cls, value: str | None) -> datetime.date:
         if not value:
@@ -330,12 +313,12 @@ class StrictModelGithub(BaseModel):
                 try:
                     # Day, month, year - 23/10/2023
                     return datetime.datetime.strptime(value, "%d/%m/%Y")
-                except ValueError:
+                except ValueError as err:
                     # NRMCB has "expected 06-2024"
                     if "expected" in value.lower():
                         return None
                     else:
-                        raise ValueError(f"Unrecognised value: {value}")
+                        raise ValueError(f"Unrecognised value: {value}") from err
         else:
             raise ValueError(f"Unrecognised value: {value}")
 
@@ -390,9 +373,8 @@ class SemiStrictModelGithub(BaseModel):
         for key in model:
             # print(f"Key {key} has value {model[key]} is type {type(model[key])}")
             # print(f"Value in blank_strings {value}")
-            if isinstance(model[key], str):
-                if model[key].strip() == "":
-                    model[key] = None
+            if isinstance(model[key], str) and model[key].strip() == "":
+                model[key] = None
         return model
 
     # God I hate NaNs
@@ -400,9 +382,8 @@ class SemiStrictModelGithub(BaseModel):
     @classmethod
     def replace_NaNs(cls, model: Any) -> Any:
         for key in model:
-            if isinstance(model[key], float):
-                if math.isnan(model[key]):
-                    model[key] = None
+            if isinstance(model[key], float) and math.isnan(model[key]):
+                model[key] = None
             # print(f"Value in NaNs {model[key]}")
         # print(f"Final value { | Nonemodel}")
         return model
@@ -423,10 +404,8 @@ class SemiStrictModelGithub(BaseModel):
     @field_validator("membr_cut", "long_store", "failure")
     @classmethod
     def coerce_to_bool(cls, value: str | bool | None) -> bool | None:
-
         if (
-            value
-            == "N\t2022-10-17\t2022-10-19\t-70\t2023-06-01\t2023-06-01\t\t\t"
+            value == "N\t2022-10-17\t2022-10-19\t-70\t2023-06-01\t2023-06-01\t\t\t"
         ):  # In VB long_store
             return None
         if not value:
@@ -445,14 +424,9 @@ class SemiStrictModelGithub(BaseModel):
             ]:  # "\u03c4" is a Greek Tau in ROSKOGO
                 raise ValueError(f"Unrecognised value: {value}")
             else:
-                if vl in ["y", "t"]:
-                    return True
-                else:
-                    return False
+                return vl in ["y", "t"]
 
-    @field_validator(
-        "collection_date", "samp_store_date", "ship_date", "arr_date_hq"
-    )
+    @field_validator("collection_date", "samp_store_date", "ship_date", "arr_date_hq")
     @classmethod
     def coerce_the_date_strings(cls, value: str | None) -> datetime.date:
         if not value:
@@ -465,18 +439,16 @@ class SemiStrictModelGithub(BaseModel):
                 try:
                     # Day, month, year - 23/10/2023
                     return datetime.datetime.strptime(value, "%d/%m/%Y")
-                except ValueError:
+                except ValueError as err:
                     # NRMCB has "expected 06-2024"
                     if "expected" in value.lower():
                         return None
                     else:
-                        raise ValueError(f"Unrecognised value: {value}")
+                        raise ValueError(f"Unrecognised value: {value}") from err
         else:
             raise ValueError(f"Unrecognised value: {value}")
 
-    @field_serializer(
-        "collection_date", "samp_store_date", "ship_date", "arr_date_hq"
-    )
+    @field_serializer("collection_date", "samp_store_date", "ship_date", "arr_date_hq")
     def serialize_dates(self, value: datetime.date | None) -> str | None:
         if isinstance(value, datetime.date):
             return value.strftime("%Y-%m-%d")

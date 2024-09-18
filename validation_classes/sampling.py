@@ -4,12 +4,14 @@ import datetime
 import math
 from typing import Any
 
-from pydantic import AliasChoices
-from pydantic import BaseModel
-from pydantic import Field
-from pydantic import field_serializer
-from pydantic import field_validator
-from pydantic import model_validator
+from pydantic import (
+    AliasChoices,
+    BaseModel,
+    Field,
+    field_serializer,
+    field_validator,
+    model_validator,
+)
 
 
 class Model(BaseModel):
@@ -64,9 +66,8 @@ class Model(BaseModel):
     def contains_a_blank_string(cls, model: Any) -> Any:
         for key in model:
             # print(f"Value in blank_strings {value}")
-            if isinstance(model[key], str):
-                if model[key].strip() == "":
-                    model[key] = None
+            if isinstance(model[key], str) and model[key].strip() == "":
+                model[key] = None
         return model
 
     # Replace NaNs
@@ -74,9 +75,8 @@ class Model(BaseModel):
     @classmethod
     def replace_NaNs(cls, model: Any) -> Any:
         for key in model:
-            if isinstance(model[key], float):
-                if math.isnan(model[key]):
-                    model[key] = None
+            if isinstance(model[key], float) and math.isnan(model[key]):
+                model[key] = None
             # print(f"Value in NaNs {model[key]}")
         # print(f"Final value { | Nonemodel}")
         return model
@@ -100,15 +100,12 @@ class Model(BaseModel):
     @field_validator("membr_cut", "failure", "long_store")
     @classmethod
     def coerce_to_bool(cls, value: str | None) -> bool | None:
-        if (
-            value
-            == "N\t2022-10-17\t2022-10-19\t-70\t2023-06-01\t2023-06-01\t\t\t"
-        ):  # In VB long_store
-            return None
-        if not value:
-            return None
         if isinstance(value, bool):
             return value
+        if not value or (
+            value == "N\t2022-10-17\t2022-10-19\t-70\t2023-06-01\t2023-06-01\t\t\t"
+        ):  # In VB long_store
+            return None
         else:
             vl = value.lower()
             # print(f"This is vl: {vl}")
@@ -121,10 +118,7 @@ class Model(BaseModel):
             ]:  # "\u03c4" is a Greek Tau in ROSKOGO
                 raise ValueError(f"Unrecognised value: {value}")
             else:
-                if vl in ["y", "t"]:
-                    return True
-                else:
-                    return False
+                return vl in ["y", "t", "\u03c4"]
 
     @field_validator("store_temp_hq")
     @classmethod
@@ -140,8 +134,8 @@ class Model(BaseModel):
                 try:
                     datetime.datetime.strptime(value, "%Y-%m-%d")
                     return None
-                except ValueError:
-                    raise ValueError(f"Unrecognised value: {value}")
+                except ValueError as err:
+                    raise ValueError(f"Unrecognised value: {value}") from err
 
     @field_validator("replicate")
     @classmethod
@@ -186,12 +180,12 @@ class Model(BaseModel):
                 try:
                     # Day, month, year - 23/10/2023
                     return datetime.datetime.strptime(value, "%d/%m/%Y")
-                except ValueError:
+                except ValueError as err:
                     # NRMCB has "expected 06-2024"
                     if "expected" in value.lower():
                         return None
                     else:
-                        raise ValueError(f"Unrecognised value: {value}")
+                        raise ValueError(f"Unrecognised value: {value}") from err
         else:
             raise ValueError(f"Unrecognised value: {value}")
 
@@ -226,9 +220,7 @@ class Model(BaseModel):
             return None
 
     @field_serializer("depth", "time_fi", "size_frac")
-    def serialize_str_float_to_str(
-        self, value: str | float | None
-    ) -> str | None:
+    def serialize_str_float_to_str(self, value: str | float | None) -> str | None:
         if isinstance(value, str):
             return value
         elif isinstance(value, float):
@@ -237,27 +229,13 @@ class Model(BaseModel):
             return None
 
     @field_serializer("samp_size_vol")
-    def serialize_int_float_to_float(
-        self, value: int | float | None
-    ) -> float | None:
+    def serialize_int_float_to_float(self, value: int | float | None) -> float | None:
         if isinstance(value, float):
             return value
         elif isinstance(value, int):
             return float(value)
         else:
             return None
-
-    # Some sheets e.g. OSD74 have NaNs in this field and the values get read as floats by pandas
-    # You cannot use standard serialisation because you end up with mixed "int" and "float" sheets
-    # @field_serializer("tax_id")
-    # def serialize_tax_id(self, value: Union[int, float, None]) -> Optional[int]:
-    #    #print(f"Type of {value} is {type(value)}")
-    #    if not value:
-    #        return None
-    #    if isinstance(value, int):
-    #        return value
-    #    if isinstance(value, float):
-    #        return int(value) # this should be safe because the floats are coerced integers
 
 
 # STRICT #########################################################

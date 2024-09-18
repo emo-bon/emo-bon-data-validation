@@ -3,11 +3,7 @@ from __future__ import annotations
 import math
 from typing import Any
 
-from pydantic import AliasChoices
-from pydantic import BaseModel
-from pydantic import Field
-from pydantic import field_validator
-from pydantic import model_validator
+from pydantic import AliasChoices, BaseModel, Field, field_validator, model_validator
 
 
 class Model(BaseModel):
@@ -19,22 +15,12 @@ class Model(BaseModel):
     chlorophyll_method: str | None
     sea_surf_temp: float | None
     sea_surf_temp_method: str | None
-    sea_subsurf_temp: (
-        float | str | None
-    ) = None  # Not taken for soft sediments
+    sea_subsurf_temp: float | str | None = None  # Not taken for soft sediments
     sea_subsurf_temp_method: None | (str) = None  # Not taken for sediments
-    sea_surf_salinity: (
-        float | str | None
-    ) = None  # Not taken for soft sediments
-    sea_surf_salinity_method: None | (
-        str
-    ) = None  # Not taken for soft sediments
-    sea_subsurf_salinity: (
-        float | str | None
-    ) = None  # Not taken for soft sediments
-    sea_subsurf_salinity_method: None | (
-        str
-    ) = None  # Not taken for soft sediments
+    sea_surf_salinity: float | str | None = None  # Not taken for soft sediments
+    sea_surf_salinity_method: None | (str) = None  # Not taken for soft sediments
+    sea_subsurf_salinity: float | str | None = None  # Not taken for soft sediments
+    sea_subsurf_salinity_method: None | (str) = None  # Not taken for soft sediments
     alkalinity: str | None
     alkalinity_method: str | None
     ammonium: float | None
@@ -103,9 +89,8 @@ class Model(BaseModel):
     def contains_a_blank_string(cls, model: Any) -> Any:
         for key in model:
             # print(f"Value in blank_strings {value}")
-            if isinstance(model[key], str):
-                if model[key].strip() == "":
-                    model[key] = None
+            if isinstance(model[key], str) and model[key].strip() == "":
+                model[key] = None
         return model
 
     # Squash NaNs
@@ -113,9 +98,8 @@ class Model(BaseModel):
     @classmethod
     def replace_NaNs(cls, model: Any) -> Any:
         for key in model:
-            if isinstance(model[key], float):
-                if math.isnan(model[key]):
-                    model[key] = None
+            if isinstance(model[key], float) and math.isnan(model[key]):
+                model[key] = None
             # print(f"Value in NaNs {model[key]}")
         # print(f"Final value { | Nonemodel}")
         return model
@@ -157,7 +141,7 @@ class Model(BaseModel):
                 # ESC68N has 'could not retrieve CTD'
                 return None
         else:
-            raise ValueError(f"What the hell is this: {value}")
+            raise ValueError(f"Error: unrecognised value {value}")
 
     @field_validator("sea_subsurf_temp", "ph")
     @classmethod
@@ -175,7 +159,7 @@ class Model(BaseModel):
                 # NRMCB has '16,7041'
                 return None
         else:
-            raise ValueError(f"What the hell is this: {value}")
+            raise ValueError(f"Error: unrecognised value {value}")
 
     @field_validator("conduc")
     @classmethod
@@ -197,4 +181,4 @@ class Model(BaseModel):
             else:
                 return None
         else:
-            raise ValueError(f"What the hell is this: {value}")
+            raise ValueError(f"Error: unrecognised value {value}")

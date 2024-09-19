@@ -8,4 +8,4 @@ emo-bon-data-validation.code-workspace
 *.swp
 .vscode
 .ruff_cache
-__pycache__
+src/validation_classes/__pycache__

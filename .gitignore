@@ -1,5 +1,4 @@
 .ipynb_checkpoints
-validation_classes/__pycache__
 validation_errors_github/*
 .ipynb_checkpoints/*
 .mypy_cache

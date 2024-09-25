@@ -137,6 +137,10 @@ class Model(BaseModel):
             try:
                 return float(value)
             except ValueError:
+                # TODO: This is an error; pigments and other should return a list
+                raise RuntimeError(
+                    "Error: TODO This is a error; pigmment can be a string"
+                ) from None
                 # BPNS has "Expected 12-2024"
                 # ESC68N has 'could not retrieve CTD'
                 return None

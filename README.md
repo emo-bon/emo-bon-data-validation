@@ -35,7 +35,7 @@ The `emo-bon-data-validation` project is designed to validate sampling log-sheet
 
 1. Clone the repository:
     ```sh
-    git clone https://github.com/yourusername/emo-bon-data-validation.git
+    git clone https://github.com/emo-bon/emo-bon-data-validation.git
     cd emo-bon-data-validation
     ```
 
@@ -48,7 +48,7 @@ The `emo-bon-data-validation` project is designed to validate sampling log-sheet
 
 1. Explore the Jupyter Notebooks for interactive validation:
     ```sh
-    poetry run jupyter notebook notebooks/
+    jupyter notebook notebooks/
     ```
 
 ## License

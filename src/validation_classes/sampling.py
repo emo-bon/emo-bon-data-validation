@@ -14,6 +14,9 @@ from pydantic import (
     model_validator,
 )
 
+# TODO: "Noteworthy_env_cond" Optional string
+# TODO: replicate has been fixed...
+
 
 class Model(BaseModel):
     source_mat_id_orig: str | None

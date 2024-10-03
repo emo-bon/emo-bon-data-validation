@@ -3,15 +3,12 @@ from __future__ import annotations
 import math
 from typing import Any
 
-from pydantic import AliasChoices, BaseModel, Field, field_validator, model_validator
+from pydantic import BaseModel, field_validator, model_validator
 
 
 class Model(BaseModel):
-    source_mat_id: str = Field(
-        ...,
-        validation_alias=AliasChoices("source_mat_id", "source_material_id"),
-    )
-    chlorophyll: float | str | None
+    source_mat_id: str
+    chlorophyll: float | str | None  # str is an annotation error
     chlorophyll_method: str | None
     sea_surf_temp: float | None
     sea_surf_temp_method: str | None
@@ -62,11 +59,11 @@ class Model(BaseModel):
     part_org_nitro_method: str | None
     petroleum_hydrocarb: str | None
     petroleum_hydrocarb_method: str | None
-    phaeopigments: float | None
+    phaeopigments: str | None
     phaeopigments_method: str | None
     phosphate: float | str | None
     phosphate_method: str | None
-    pigments: float | str | None
+    pigments: str | None
     pigments_method: str | None
     pressure: float | str | None
     pressure_method: str | None
@@ -117,12 +114,12 @@ class Model(BaseModel):
         # print(f"Final value {model}")
         return model
 
+    # Any strings in these fields are annotations and can be ignored
     @field_validator(
         "chlorophyll",
         "sea_surf_salinity",
         "sea_subsurf_salinity",
         "phosphate",
-        "pigments",
         "diss_oxygen",
         "pressure",
         "density",
@@ -134,16 +131,10 @@ class Model(BaseModel):
         if isinstance(value, float):
             return value
         if isinstance(value, str):
-            try:
-                return float(value)
-            except ValueError:
-                # TODO: This is an error; pigments and other should return a list
-                raise RuntimeError(
-                    "Error: TODO This is a error; pigmment can be a string"
-                ) from None
-                # BPNS has "Expected 12-2024"
-                # ESC68N has 'could not retrieve CTD'
-                return None
+            # BPNS has "Expected 12-2024"
+            # ESC68N has 'could not retrieve CTD'
+            # If it cannot be automatically coerced to a float, return None
+            return None
         else:
             raise ValueError(f"Error: unrecognised value {value}")
 

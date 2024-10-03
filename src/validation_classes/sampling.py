@@ -40,6 +40,7 @@ class Model(BaseModel):
     sampl_person_orcid: str | None
     tidal_stage: str | None
     depth: str | float | None  # TODO serialise to str
+    noteworthy_env_cond: str | None
     replicate: str | None
     samp_size_vol: int | float | None = None  # TODO serialise to float
     time_fi: str | float | None = None  # TODO serialise to str

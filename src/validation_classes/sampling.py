@@ -176,7 +176,7 @@ class Model(BaseModel):
             raise ValueError(f"Unrecognised value: {value}")
 
     # Some sheets e.g. OSD74 have NaNs in this field and the
-    # values get read as floats by pandasYou cannot use standard
+    # values get read as floats by pandas You cannot use standard
     # serialisation because you end up with mixed "int" and "float" sheets
     @field_validator("tax_id")
     @classmethod

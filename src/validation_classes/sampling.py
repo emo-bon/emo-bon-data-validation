@@ -17,6 +17,16 @@ from pydantic import (
 # TODO: "Noteworthy_env_cond" Optional string
 # TODO: replicate has been fixed...
 
+"""
+    =CONCATENATE(observatory!$A$2,"_",H3,"_",R3,"um","_",N3)
+
+    observatory!$A$2 = "EMOBON"
+    H3 = sampling event: "RFormosa_Wa_210805"
+    R3 = size_frac_low: "3"
+    N3 = replicate: "3"
+        == EMOBON_RFormosa_Wa_210805_3um_3
+"""
+
 
 class Model(BaseModel):
     source_mat_id_orig: str | None

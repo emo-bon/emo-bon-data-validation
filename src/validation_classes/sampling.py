@@ -15,7 +15,6 @@ from pydantic import (
 )
 
 # TODO: "Noteworthy_env_cond" Optional string
-# TODO: replicate has been fixed...
 
 """
     =CONCATENATE(observatory!$A$2,"_",H3,"_",R3,"um","_",N3)
@@ -43,7 +42,7 @@ class Model(BaseModel):
     sampl_person_orcid: str | None
     tidal_stage: str | None
     depth: str | float | None  # TODO serialise to str
-    replicate: str | int | float | None  # Serialised to str
+    replicate: str | None
     samp_size_vol: int | float | None = None  # TODO serialise to float
     time_fi: str | float | None = None  # TODO serialise to str
     size_frac: str | float | None = None  # TODO serialise to str
@@ -150,29 +149,6 @@ class Model(BaseModel):
                     return None
                 except ValueError as err:
                     raise ValueError(f"Unrecognised value: {value}") from err
-
-    @field_validator("replicate")
-    @classmethod
-    def coerce_replicate_to_string(cls, value: int | float | None) -> str:
-        # pylint: disable=unsubscriptable-object
-        """
-        Coerces replicate to a string, or "blank" if None
-
-        Google sheets interprets the word "blank" as NULL/NaN
-        when retrieving the sheet using the old "visualisation" method?!
-        The values in sheets are ints but are coerced to floats by pandas
-        because of the NaNs. Here we assume all None's (replaced NaNs,
-        see above) are supposed to be "blank"
-        """
-        # print(f"{value=} is type {type(value)}")
-        if not value:
-            return "blank"
-        if isinstance(value, int):
-            return str(value)
-        elif isinstance(value, float):
-            return str(int(value))
-        else:
-            raise ValueError(f"Unrecognised value: {value}")
 
     @field_validator(
         "collection_date",

@@ -5,9 +5,7 @@ import math
 from typing import Any
 
 from pydantic import (
-    AliasChoices,
     BaseModel,
-    Field,
     ValidationInfo,
     field_serializer,
     field_validator,
@@ -68,10 +66,7 @@ class Model(BaseModel):
     failure: bool | str | None  # Serialised to bool
     failure_comment: str | None
     ENA_accession_number_sample: str | None = None
-    source_mat_id: str = Field(
-        ...,
-        validation_alias=AliasChoices("source_mat_id", "source_material_id"),
-    )
+    source_mat_id: str
 
     # Let's get rid of empty strings first:
     @model_validator(mode="before")

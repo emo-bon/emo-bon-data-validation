@@ -12,19 +12,6 @@ from pydantic import (
     model_validator,
 )
 
-# TODO: "Noteworthy_env_cond" Optional string
-
-"""
-    =CONCATENATE(observatory!$A$2,"_",H3,"_",R3,"um","_",N3)
-
-    observatory!$A$2 = "EMOBON"
-    H3 = sampling event: "RFormosa_Wa_210805"
-    R3 = size_frac_low: "3"
-    N3 = replicate: "3"
-        == EMOBON_RFormosa_Wa_210805_3um_3
-"""
-
-
 class Model(BaseModel):
     source_mat_id_orig: str | None
     samp_description: str | None
@@ -41,7 +28,7 @@ class Model(BaseModel):
     tidal_stage: str | None
     depth: str | float | None  # TODO serialise to str
     noteworthy_env_cond: str | None
-    replicate: str | None
+    replicate: str | int #https://github.com/emo-bon/observatory-profile/issues/33
     samp_size_vol: int | float | None = None  # TODO serialise to float
     time_fi: str | float | None = None  # TODO serialise to str
     size_frac: str | float | None = None  # TODO serialise to str
@@ -115,6 +102,14 @@ class Model(BaseModel):
             value == "N\t2022-10-17\t2022-10-19\t-70\t2023-06-01\t2023-06-01\t\t\t"
         ):  # In VB long_store
             return None
+        # https://github.com/emo-bon/observatory-profile/issues/32
+        try:
+            float(value)
+            return None
+        except ValueError as e:
+            if not "could not convert string to float" in str(e):
+                raise e
+        # Should be string
         else:
             vl = value.lower()
             # print(f"This is vl: {vl}")
@@ -170,6 +165,9 @@ class Model(BaseModel):
                     # NRMCB has "expected 06-2024"
                     if "expected" in value.lower():
                         return None
+                    # UMF has "to_arrive_Sep_2023"
+                    elif "arrive" in value.lower():
+                        return None
                     else:
                         raise ValueError(f"Unrecognised value: {value}") from err
         else:
@@ -208,6 +206,16 @@ class Model(BaseModel):
 
         return value
 
+    #https://github.com/emo-bon/observatory-profile/issues/33
+    @field_validator("replicate")
+    @classmethod
+    def check_if_replicate_is_still_an_int(cls, value: str | int) -> str:
+        # It appears not all sheets have had replicate changed to a string type
+        if isinstance(value, int):
+            return str(value)
+        else:
+            return value
+    
     @field_serializer(
         "collection_date",
         "samp_store_date",
@@ -239,7 +247,6 @@ class Model(BaseModel):
             return float(value)
         else:
             return None
-
 
 # STRICT #########################################################
 

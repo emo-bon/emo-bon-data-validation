@@ -5,7 +5,6 @@ from typing import Any
 
 from pydantic import BaseModel, field_validator, model_validator
 
-
 class Model(BaseModel):
     source_mat_id: str
     chlorophyll: float | str | None  # str is an annotation error
@@ -59,11 +58,11 @@ class Model(BaseModel):
     part_org_nitro_method: str | None
     petroleum_hydrocarb: str | None
     petroleum_hydrocarb_method: str | None
-    phaeopigments: str | None
+    phaeopigments: str | float | None
     phaeopigments_method: str | None
     phosphate: float | str | None
     phosphate_method: str | None
-    pigments: str | None
+    pigments: str | float | None
     pigments_method: str | None
     pressure: float | str | None
     pressure_method: str | None
@@ -155,6 +154,16 @@ class Model(BaseModel):
                 return None
         else:
             raise ValueError(f"Error: unrecognised value {value}")
+
+    @field_validator("pigments", "phaeopigments")
+    @classmethod
+    def deal_with_incorrectly_formatted_lists(
+        cls, value: str | float | None
+    ) -> str | None:
+        if isinstance(value, float):
+            return str(value)        
+        else:
+            return value
 
     @field_validator("conduc")
     @classmethod

@@ -12,6 +12,7 @@ from pydantic import (
     model_validator,
 )
 
+
 class Model(BaseModel):
     source_mat_id_orig: str | None
     samp_description: str | None
@@ -28,9 +29,9 @@ class Model(BaseModel):
     tidal_stage: str | None
     depth: str | float | None  # TODO serialise to str
     noteworthy_env_cond: str | None
-    replicate: str | int #https://github.com/emo-bon/observatory-profile/issues/33
+    replicate: str | int  # https://github.com/emo-bon/observatory-profile/issues/33
     samp_size_vol: int | float | None = None  # TODO serialise to float
-    time_fi: str | float | None = None  # TODO serialise to str
+    time_fi: str | int | float | None = None  # TODO serialise to str
     size_frac: str | float | None = None  # TODO serialise to str
     size_frac_low: float | None
     size_frac_up: float | None
@@ -107,7 +108,7 @@ class Model(BaseModel):
             float(value)
             return None
         except ValueError as e:
-            if not "could not convert string to float" in str(e):
+            if "could not convert string to float" not in str(e):
                 raise e
         # Should be string
         else:
@@ -163,10 +164,7 @@ class Model(BaseModel):
                     return datetime.datetime.strptime(value, "%d/%m/%Y")
                 except ValueError as err:
                     # NRMCB has "expected 06-2024"
-                    if "expected" in value.lower():
-                        return None
-                    # UMF has "to_arrive_Sep_2023"
-                    elif "arrive" in value.lower():
+                    if "expected" in value.lower() or "arrive" in value.lower():
                         return None
                     else:
                         raise ValueError(f"Unrecognised value: {value}") from err
@@ -206,7 +204,7 @@ class Model(BaseModel):
 
         return value
 
-    #https://github.com/emo-bon/observatory-profile/issues/33
+    # https://github.com/emo-bon/observatory-profile/issues/33
     @field_validator("replicate")
     @classmethod
     def check_if_replicate_is_still_an_int(cls, value: str | int) -> str:
@@ -215,7 +213,7 @@ class Model(BaseModel):
             return str(value)
         else:
             return value
-    
+
     @field_serializer(
         "collection_date",
         "samp_store_date",
@@ -231,10 +229,10 @@ class Model(BaseModel):
             return None
 
     @field_serializer("depth", "time_fi", "size_frac")
-    def serialize_str_float_to_str(self, value: str | float | None) -> str | None:
+    def serialize_str_float_to_str(self, value: str | int | float | None) -> str | None:
         if isinstance(value, str):
             return value
-        elif isinstance(value, float):
+        elif isinstance(value, (float, int)):
             return str(value)
         else:
             return None
@@ -247,6 +245,7 @@ class Model(BaseModel):
             return float(value)
         else:
             return None
+
 
 # STRICT #########################################################
 
@@ -313,7 +312,7 @@ class SemiStrictModel(Model):
         str | int | float | None
     )  # Rep int or "blank", hence str raw sheets are broken
     samp_size_vol: float | int | None
-    time_fi: str | int | None  # Either str "fi" or integer!
+    time_fi: str | int | float | None  # Either str "fi" or integer or float!
     size_frac: str | None
     size_frac_low: float | int | None
     size_frac_up: float | int | None

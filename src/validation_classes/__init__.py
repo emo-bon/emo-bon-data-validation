@@ -4,6 +4,7 @@ from .logsheets import Model as logsheetsModel
 from .measured import Model as measuredModel
 from .observatories import Model as observatoriesModel
 from .observatory import Model as observatoryModel
+from .sampling import MandatoryModel as samplingModelMandatory
 from .sampling import Model as samplingModel
 from .sampling import SemiStrictModel as samplingModelSemiStrict
 from .sampling import StrictModel as samplingModelStrict
@@ -20,6 +21,7 @@ __all__ = [
     "observatoryModel",
     "samplingModel",
     "samplingModelSemiStrict",
+    "samplingModelMandatory",
     "samplingModelStrict",
     "samplingModelGithub",
     "samplingModelGithubSemiStrict",

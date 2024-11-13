@@ -27,12 +27,12 @@ class Model(BaseModel):
     sampl_person: str | None
     sampl_person_orcid: str | None
     tidal_stage: str | None
-    depth: str | float | None  # TODO serialise to str
+    depth: str | float | None
     noteworthy_env_cond: str | None
     replicate: str | int  # https://github.com/emo-bon/observatory-profile/issues/33
-    samp_size_vol: int | float | None = None  # TODO serialise to float
-    time_fi: str | int | float | None = None  # TODO serialise to str
-    size_frac: str | float | None = None  # TODO serialise to str
+    samp_size_vol: int | float | None = None
+    time_fi: str | int | float | None = None
+    size_frac: str | float | None = None  # Not taken for soft sediments
     size_frac_low: float | None
     size_frac_up: float | None
     membr_cut: bool | str | None = None  # Serialised as bool
@@ -266,7 +266,7 @@ class StrictModel(Model):
     replicate: str
     samp_size_vol: int
     time_fi: str | int
-    size_frac: str
+    # size_frac: str
     size_frac_low: float  # Yes really a float!
     size_frac_up: float  # Yes really a float!
     membr_cut: bool | str | None = None
@@ -337,3 +337,49 @@ class SemiStrictModel(Model):
     failure_comment: str | None
     ENA_accession_number_sample: str | None
     source_mat_id: str | None
+
+
+# Mandatory ####################################################
+# Only checking whether mandatory fields are present
+
+
+class MandatoryModel(Model):
+    source_mat_id_orig: Any
+    samp_description: Any
+    tax_id: Any
+    scientific_name: Any
+    investigation_type: Any
+    env_material: Any
+    collection_date: Any | None
+    sampling_event: Any
+    sampl_person: Any
+    sampl_person_orcid: Any | None
+    tidal_stage: Any | None
+    depth: Any
+    replicate: Any
+    samp_size_vol: Any
+    time_fi: Any
+    size_frac: Any
+    size_frac_low: Any  # Yes really a float!
+    size_frac_up: Any  # Yes really a float!
+    membr_cut: Any = None
+    samp_collect_device: Any
+    samp_mat_process: Any
+    samp_mat_process_dev: Any
+    samp_store_date: Any = None
+    samp_store_loc: Any
+    samp_store_temp: Any
+    store_person: Any
+    store_person_orcid: Any | None
+    other_person: Any | None
+    other_person_orcid: Any | None
+    long_store: Any = None
+    ship_date: Any | None
+    arr_date_hq: Any | None
+    store_temp_hq: Any
+    ship_date_seq: Any | None
+    arr_date_seq: Any | None
+    failure: Any = None
+    failure_comment: Any
+    ENA_accession_number_sample: Any
+    source_mat_id: Any

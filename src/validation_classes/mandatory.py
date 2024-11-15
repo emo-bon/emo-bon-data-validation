@@ -42,90 +42,131 @@ OPTIONAL fields only in SS: 0
 
 """
 
-from typing import Any, Optional
+import math
+from typing import Optional
 
-from pydantic import BaseModel
+from pydantic import BaseModel, model_validator
 
 
 class WaterColumnDataModel(BaseModel):
     # 32 Mandatory fields
-    arr_date_hq: Any
-    arr_date_seq: Any
-    collection_date: Any
-    depth: Any
-    env_material: Any
-    failure: Any
-    failure_comment: Any
-    investigation_type: Any
-    long_store: Any
-    membr_cut: Any
-    replicate: Any
-    samp_collect_device: Any
-    samp_description: Any
-    samp_mat_process: Any
-    samp_mat_process_dev: Any
-    samp_size_vol: Any
-    samp_store_date: Any
-    samp_store_loc: Any
-    samp_store_temp: Any
-    sampl_person: Any
-    sampling_event: Any
-    ship_date: Any
-    ship_date_seq: Any
-    size_frac: Any
-    size_frac_low: Any
-    size_frac_up: Any
-    source_mat_id_orig: Any
-    source_mat_id: Any
-    store_person: Any
-    store_temp_hq: Any
-    tax_id: Any
-    time_fi: Any
+    arr_date_hq: str
+    arr_date_seq: str
+    collection_date: str
+    depth: int | float
+    env_material: str
+    failure: str
+    failure_comment: str
+    investigation_type: str
+    long_store: str
+    membr_cut: str
+    replicate: str
+    samp_collect_device: str
+    samp_description: str
+    samp_mat_process: str
+    samp_mat_process_dev: str
+    samp_size_vol: int
+    samp_store_date: str
+    samp_store_loc: str
+    samp_store_temp: float
+    sampl_person: str
+    sampling_event: str
+    ship_date: str
+    ship_date_seq: str
+    size_frac: str | float | int
+    size_frac_low: float | int
+    size_frac_up: float | int
+    source_mat_id_orig: str
+    source_mat_id: str
+    store_person: str
+    store_temp_hq: float | int
+    tax_id: int
+    time_fi: str | int | float
 
     # 6 Optional fields
-    noteworthy_env_cond: Optional[Any] = None
-    other_person: Optional[Any] = None
-    other_person_orcid: Optional[Any] = None
-    sampl_person_orcid: Optional[Any] = None
-    store_person_orcid: Optional[Any] = None
-    tidal_stage: Optional[Any] = None
+    noteworthy_env_cond: Optional[str] = None
+    other_person: Optional[str] = None
+    other_person_orcid: Optional[str] = None
+    sampl_person_orcid: Optional[str] = None
+    store_person_orcid: Optional[str] = None
+    tidal_stage: Optional[str] = None
+
+    # Replace NaNs
+    @model_validator(mode="before")
+    @classmethod
+    def replace_NaNs(cls, model):
+        for key in model:
+            # NaNs
+            if isinstance(model[key], float) and math.isnan(model[key]):
+                model[key] = None
+            # Strings
+            if isinstance(model[key], str):
+                # Empty strings
+                if model[key].strip() == "":
+                    model[key] = None
+                else:
+                    # "NA" "N/A"s
+                    elem = model[key].strip().lower
+                    if elem in ["na", "n a", "n/a", "n / a", "none"]:
+                        model[key] = None
+        return model
 
 
 class SoftSedimentDataModel(BaseModel):
     # 28 Mandatory fields
-    arr_date_hq: Any
-    arr_date_seq: Any
-    collection_date: Any
-    comm_samp: Any
-    depth: Any
-    env_material: Any
-    failure: Any
-    failure_comment: Any
-    investigation_type: Any
-    long_store: Any
-    replicate: Any
-    samp_collect_device: Any
-    samp_store_date: Any
-    samp_mat_process: Any
-    samp_mat_process_dev: Any
-    samp_size_mass: Any
-    samp_store_loc: Any
-    samp_store_temp: Any
-    sampl_person: Any
-    sampling_event: Any
-    ship_date: Any
-    ship_date_seq: Any
-    size_frac_low: Any
-    size_frac_up: Any
-    source_mat_id_orig: Any
-    source_mat_id: Any
-    store_person: Any
-    store_temp_hq: Any
+    arr_date_hq: str
+    arr_date_seq: str
+    collection_date: str
+    comm_samp: str
+    depth: int | float
+    env_material: str
+    failure: str
+    failure_comment: str
+    investigation_type: str
+    long_store: str
+    replicate: str | int
+    samp_collect_device: str
+    samp_store_date: str
+    samp_mat_process: str
+    samp_mat_process_dev: str
+    samp_size_mass: int | float
+    samp_store_loc: str
+    samp_store_temp: int | float
+    sampl_person: str
+    sampling_event: str
+    ship_date: str
+    ship_date_seq: str
+    size_frac_low: int | float
+    size_frac_up: int | float
+    source_mat_id_orig: str
+    source_mat_id: str
+    store_person: str
+    store_temp_hq: int | float
 
     # 6 Optional fields
-    noteworthy_env_cond: Optional[Any] = None
-    other_person: Optional[Any] = None
-    other_person_orcid: Optional[Any] = None
-    sampl_person_orcid: Optional[Any] = None
-    store_person_orcid: Optional[Any] = None
-    tidal_stage: Optional[Any] = None
+    noteworthy_env_cond: Optional[str] = None
+    other_person: Optional[str] = None
+    other_person_orcid: Optional[str] = None
+    sampl_person_orcid: Optional[str] = None
+    store_person_orcid: Optional[str] = None
+    tidal_stage: Optional[str] = None
+
+    # Replace NaNs
+    @model_validator(mode="before")
+    @classmethod
+    def replace_NaNs(cls, model):
+        for key in model:
+            # NaNs
+            if isinstance(model[key], float) and math.isnan(model[key]):
+                model[key] = None
+            # Strings
+            if isinstance(model[key], str):
+                # Empty strings
+                if model[key].strip() == "":
+                    model[key] = None
+                else:
+                    # "NA" "N/A"s
+                    elem = model[key].strip().lower
+                    if elem in ["na", "n a", "n/a", "n / a", "none"]:
+                        model[key] = None
+        return model

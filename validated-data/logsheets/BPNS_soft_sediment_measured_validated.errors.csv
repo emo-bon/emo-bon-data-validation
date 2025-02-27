@@ -1,0 +1,6 @@
+,index,errors
+0,193,"[{'type': 'string_type', 'loc': ('source_mat_id',), 'msg': 'Input should be a valid string', 'input': None, 'url': 'https://errors.pydantic.dev/2.9/v/string_type'}]"
+1,194,"[{'type': 'string_type', 'loc': ('source_mat_id',), 'msg': 'Input should be a valid string', 'input': None, 'url': 'https://errors.pydantic.dev/2.9/v/string_type'}]"
+2,195,"[{'type': 'string_type', 'loc': ('source_mat_id',), 'msg': 'Input should be a valid string', 'input': None, 'url': 'https://errors.pydantic.dev/2.9/v/string_type'}]"
+3,196,"[{'type': 'string_type', 'loc': ('source_mat_id',), 'msg': 'Input should be a valid string', 'input': None, 'url': 'https://errors.pydantic.dev/2.9/v/string_type'}]"
+4,197,"[{'type': 'string_type', 'loc': ('source_mat_id',), 'msg': 'Input should be a valid string', 'input': None, 'url': 'https://errors.pydantic.dev/2.9/v/string_type'}]"

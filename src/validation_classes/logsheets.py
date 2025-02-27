@@ -1,7 +1,7 @@
 from __future__ import annotations
 
 import math
-from datetime import date
+from datetime import datetime
 from typing import Any
 
 from pydantic import (
@@ -28,7 +28,7 @@ class Model(BaseModel):
     soft_sediment: HttpUrl | None = Field(
         ..., validation_alias=AliasChoices("Soft sediment", "soft_sediemnt")
     )
-    data_quality_control_threshold_date: date
+    data_quality_control_threshold_date: datetime
     data_quality_control_assignee: str
     rocrate_profile_uri: HttpUrl
     autogenerate: bool

@@ -1,0 +1,5 @@
+,index,errors
+0,282,"[{'type': 'value_error', 'loc': ('ship_date',), 'msg': 'Value error, Unrecognised value: next batch?', 'input': 'next batch?', 'ctx': {'error': ValueError('Unrecognised value: next batch?')}, 'url': 'https://errors.pydantic.dev/2.9/v/value_error'}]"
+1,283,"[{'type': 'value_error', 'loc': ('ship_date',), 'msg': 'Value error, Unrecognised value: next batch?', 'input': 'next batch?', 'ctx': {'error': ValueError('Unrecognised value: next batch?')}, 'url': 'https://errors.pydantic.dev/2.9/v/value_error'}]"
+2,287,"[{'type': 'value_error', 'loc': ('ship_date',), 'msg': 'Value error, Unrecognised value: next batch?', 'input': 'next batch?', 'ctx': {'error': ValueError('Unrecognised value: next batch?')}, 'url': 'https://errors.pydantic.dev/2.9/v/value_error'}]"
+3,288,"[{'type': 'value_error', 'loc': ('ship_date',), 'msg': 'Value error, Unrecognised value: next batch?', 'input': 'next batch?', 'ctx': {'error': ValueError('Unrecognised value: next batch?')}, 'url': 'https://errors.pydantic.dev/2.9/v/value_error'}]"

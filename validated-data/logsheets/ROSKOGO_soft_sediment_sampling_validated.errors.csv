@@ -1,0 +1,4 @@
+,index,errors
+0,145,"[{'type': 'string_type', 'loc': ('replicate', 'str'), 'msg': 'Input should be a valid string', 'input': None, 'url': 'https://errors.pydantic.dev/2.9/v/string_type'}, {'type': 'int_type', 'loc': ('replicate', 'int'), 'msg': 'Input should be a valid integer', 'input': None, 'url': 'https://errors.pydantic.dev/2.9/v/int_type'}]"
+1,161,"[{'type': 'value_error', 'loc': ('ship_date',), 'msg': 'Value error, Unrecognised value: to ship', 'input': 'to ship', 'ctx': {'error': ValueError('Unrecognised value: to ship')}, 'url': 'https://errors.pydantic.dev/2.9/v/value_error'}]"
+2,162,"[{'type': 'value_error', 'loc': ('ship_date',), 'msg': 'Value error, Unrecognised value: to ship', 'input': 'to ship', 'ctx': {'error': ValueError('Unrecognised value: to ship')}, 'url': 'https://errors.pydantic.dev/2.9/v/value_error'}]"

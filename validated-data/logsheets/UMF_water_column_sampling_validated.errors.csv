@@ -1,0 +1,13 @@
+,index,errors
+0,109,"[{'type': 'value_error', 'loc': ('ship_date',), 'msg': 'Value error, Unrecognised value: ?', 'input': '?', 'ctx': {'error': ValueError('Unrecognised value: ?')}, 'url': 'https://errors.pydantic.dev/2.9/v/value_error'}]"
+1,110,"[{'type': 'value_error', 'loc': ('ship_date',), 'msg': 'Value error, Unrecognised value: ?', 'input': '?', 'ctx': {'error': ValueError('Unrecognised value: ?')}, 'url': 'https://errors.pydantic.dev/2.9/v/value_error'}]"
+2,113,"[{'type': 'value_error', 'loc': ('ship_date',), 'msg': 'Value error, Unrecognised value: ?', 'input': '?', 'ctx': {'error': ValueError('Unrecognised value: ?')}, 'url': 'https://errors.pydantic.dev/2.9/v/value_error'}]"
+3,114,"[{'type': 'value_error', 'loc': ('ship_date',), 'msg': 'Value error, Unrecognised value: ?', 'input': '?', 'ctx': {'error': ValueError('Unrecognised value: ?')}, 'url': 'https://errors.pydantic.dev/2.9/v/value_error'}]"
+4,124,"[{'type': 'value_error', 'loc': ('ship_date',), 'msg': 'Value error, Unrecognised value: ?', 'input': '?', 'ctx': {'error': ValueError('Unrecognised value: ?')}, 'url': 'https://errors.pydantic.dev/2.9/v/value_error'}]"
+5,125,"[{'type': 'value_error', 'loc': ('ship_date',), 'msg': 'Value error, Unrecognised value: ?', 'input': '?', 'ctx': {'error': ValueError('Unrecognised value: ?')}, 'url': 'https://errors.pydantic.dev/2.9/v/value_error'}]"
+6,128,"[{'type': 'value_error', 'loc': ('ship_date',), 'msg': 'Value error, Unrecognised value: ?', 'input': '?', 'ctx': {'error': ValueError('Unrecognised value: ?')}, 'url': 'https://errors.pydantic.dev/2.9/v/value_error'}]"
+7,129,"[{'type': 'value_error', 'loc': ('ship_date',), 'msg': 'Value error, Unrecognised value: ?', 'input': '?', 'ctx': {'error': ValueError('Unrecognised value: ?')}, 'url': 'https://errors.pydantic.dev/2.9/v/value_error'}]"
+8,139,"[{'type': 'value_error', 'loc': ('ship_date',), 'msg': 'Value error, Unrecognised value: ?', 'input': '?', 'ctx': {'error': ValueError('Unrecognised value: ?')}, 'url': 'https://errors.pydantic.dev/2.9/v/value_error'}]"
+9,140,"[{'type': 'value_error', 'loc': ('ship_date',), 'msg': 'Value error, Unrecognised value: ?', 'input': '?', 'ctx': {'error': ValueError('Unrecognised value: ?')}, 'url': 'https://errors.pydantic.dev/2.9/v/value_error'}]"
+10,143,"[{'type': 'value_error', 'loc': ('ship_date',), 'msg': 'Value error, Unrecognised value: ?', 'input': '?', 'ctx': {'error': ValueError('Unrecognised value: ?')}, 'url': 'https://errors.pydantic.dev/2.9/v/value_error'}]"
+11,144,"[{'type': 'value_error', 'loc': ('ship_date',), 'msg': 'Value error, Unrecognised value: ?', 'input': '?', 'ctx': {'error': ValueError('Unrecognised value: ?')}, 'url': 'https://errors.pydantic.dev/2.9/v/value_error'}]"
